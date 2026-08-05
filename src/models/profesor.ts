@@ -1,10 +1,11 @@
-export type Nivel = 'principiante' | 'intermedio' | 'avanzado'
-export type DiasDisponibles = 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes'
+import type { Especialidad } from './especialidad'
 
 export interface Profesor {
+  id: number
   nombre: string
   apellido: string
   dni: string
   email: string
-  telefono: string  
+  telefono: string
+  especialidades: Especialidad[]
 }

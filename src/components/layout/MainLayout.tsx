@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet, NavLink } from 'react-router-dom'
+import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import {
   AppBar,
   Box,
@@ -15,67 +15,111 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
 import type { Theme } from '@mui/material'
 import { navItems } from '../../utils/navigation'
 
 const DRAWER_WIDTH = 240
+const APP_NAME = 'Gimnasio Power Trainer'
 
-interface MainLayoutProps {
-  title: string
-}
-
-function MainLayout({ title }: MainLayoutProps) {
+function MainLayout() {
   const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
   const [mobileOpen, setMobileOpen] = useState(false)
+  const location = useLocation()
 
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev)
   }
 
   const drawerContent = (
-    <Box>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          Gym Management
-        </Typography>
-      </Toolbar>
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item.path} disablePadding>
-            <ListItemButton
-              component={NavLink}
-              to={item.path}
-              end={item.path === '/'}
-            >
-              <ListItemIcon>
-                <item.icon />
-              </ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+    <Box sx={{ height: '100%', color: 'rgba(255, 255, 255, 0.8)' }}>
+      <Toolbar />
+      <List sx={{ pt: 1 }}>
+        {navItems.map((item) => {
+          const isActive =
+            item.path === '/'
+              ? location.pathname === '/'
+              : location.pathname.startsWith(item.path)
+
+          return (
+            <ListItem key={item.path} disablePadding>
+              <ListItemButton
+                component={NavLink}
+                to={item.path}
+                end={item.path === '/'}
+                selected={isActive}
+                sx={{
+                  position: 'relative',
+                  pl: 2.5,
+                  color: 'rgba(255, 255, 255, 0.75)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                    color: '#FFFFFF',
+                  },
+                  '& .MuiListItemIcon-root': {
+                    color: 'rgba(255, 255, 255, 0.6)',
+                  },
+                  '&.Mui-selected': {
+                    backgroundColor: 'rgba(255, 193, 7, 0.14)',
+                    color: '#FFC107',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: '#FFC107',
+                    },
+                  },
+                  '&.Mui-selected::before': {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: 4,
+                    backgroundColor: '#FFC107',
+                    borderTopRightRadius: 2,
+                    borderBottomRightRadius: 2,
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <item.icon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  slotProps={{ primary: { fontWeight: 500 } }}
+                />
+              </ListItemButton>
+            </ListItem>
+          )
+        })}
       </List>
     </Box>
   )
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <AppBar
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
-        <Toolbar>
+        <Toolbar sx={{ gap: 1.5 }}>
           <IconButton
-            color="inherit"
-            aria-label="open menu"
+            aria-label="abrir menú"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { lg: 'none' } }}
+            sx={{ mr: 0.5, display: { lg: 'none' }, color: 'background.default' }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {title}
+          <FitnessCenterIcon sx={{ color: '#FFC107' }} />
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ fontSize: '1.5rem', color: '#FFFFFF' }}
+          >
+            {APP_NAME}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -116,7 +160,7 @@ function MainLayout({ title }: MainLayoutProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 3, md: 3, lg: 3 },
+          p: { xs: 2, sm: 3 },
           mt: 8,
         }}
       >

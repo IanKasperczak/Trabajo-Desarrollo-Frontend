@@ -9,7 +9,7 @@ import Salones from '../pages/Salones'
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainLayout title="Gym Management" />,
+    element: <MainLayout />,
     children: [
       { index: true, element: <Dashboard /> },
       { path: 'profesores', element: <Profesores /> },
