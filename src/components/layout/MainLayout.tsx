@@ -17,15 +17,24 @@ import {
 import MenuIcon from '@mui/icons-material/Menu'
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
 import type { Theme } from '@mui/material'
-import { navItems } from '../../utils/navigation'
+import type { Role } from '../../models/role'
+import { roleBase, roleNav } from '../../utils/navigation'
+import RoleSwitcher from '../role/RoleSwitcher'
 
 const DRAWER_WIDTH = 240
 const APP_NAME = 'Gimnasio Power Trainer'
 
-function MainLayout() {
+interface MainLayoutProps {
+  role: Role
+}
+
+function MainLayout({ role }: MainLayoutProps) {
   const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+
+  const base = roleBase[role]
+  const navItems = roleNav[role]
 
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev)
@@ -36,16 +45,17 @@ function MainLayout() {
       <Toolbar />
       <List sx={{ pt: 1 }}>
         {navItems.map((item) => {
+          const to = item.path === '/' ? base : `${base}/${item.path}`
           const isActive =
             item.path === '/'
-              ? location.pathname === '/'
-              : location.pathname.startsWith(item.path)
+              ? location.pathname === base
+              : location.pathname.startsWith(to)
 
           return (
-            <ListItem key={item.path} disablePadding>
+            <ListItem key={to} disablePadding>
               <ListItemButton
                 component={NavLink}
-                to={item.path}
+                to={to}
                 end={item.path === '/'}
                 selected={isActive}
                 sx={{
@@ -108,7 +118,11 @@ function MainLayout() {
             aria-label="abrir menú"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 0.5, display: { lg: 'none' }, color: 'background.default' }}
+            sx={{
+              mr: 0.5,
+              display: { lg: 'none' },
+              color: 'background.default',
+            }}
           >
             <MenuIcon />
           </IconButton>
@@ -117,10 +131,18 @@ function MainLayout() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ fontSize: '1.5rem', color: '#FFFFFF' }}
+            sx={{
+              fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              color: '#FFFFFF',
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
             {APP_NAME}
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <RoleSwitcher />
         </Toolbar>
       </AppBar>
 
