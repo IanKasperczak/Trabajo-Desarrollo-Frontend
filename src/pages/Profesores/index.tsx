@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Alert,
   Box,
@@ -19,12 +19,16 @@ import EmptyState from '../../components/ui/EmptyState'
 import ListSkeleton from '../../components/ui/ListSkeleton'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { profesorService } from '../../services/profesorService'
-import type { Profesor, ProfesorInput } from '../../models/profesor'
+import { especialidadService } from '../../services/especialidadService'
+import type { Profesor, ProfesorFormValues } from '../../models/profesor'
 
 type SnackbarState = { message: string; severity: 'success' | 'error' } | null
 
 function Profesores() {
   const { data, loading, error, reload } = useAsyncData(profesorService.getAll)
+  const { data: especialidadesData } = useAsyncData(especialidadService.getAll)
+
+  const especialidades = useMemo(() => especialidadesData ?? [], [especialidadesData])
 
   const [query, setQuery] = useState('')
   const [formOpen, setFormOpen] = useState(false)
@@ -53,19 +57,49 @@ function Profesores() {
     setFormOpen(true)
   }
 
-  const handleSubmit = async (values: ProfesorInput) => {
+  const handleSubmit = async (values: ProfesorFormValues) => {
     try {
+      const data = {
+        dni: values.dni,
+        nombre: values.nombre,
+        apellido: values.apellido,
+        telefono: values.telefono,
+        email: values.email,
+      }
       if (editing) {
-        await profesorService.update(editing.dni, values)
+        await profesorService.update(editing.dni, {
+          nombre: values.nombre,
+          apellido: values.apellido,
+          telefono: values.telefono,
+          email: values.email,
+        })
+        const originalIds = editing.especialidades.map((e) => e.idEspecialidad)
+        const selectedIds = values.especialidades.map((e) => e.id)
+        const originalSet = new Set(originalIds)
+        const selectedSet = new Set(selectedIds)
+        for (const id of selectedIds) {
+          if (!originalSet.has(id)) {
+            await profesorService.assignEspecialidad(editing.dni, id)
+          }
+        }
+        for (const id of originalIds) {
+          if (!selectedSet.has(id)) {
+            await profesorService.removeEspecialidad(editing.dni, id)
+          }
+        }
         setSnackbar({ message: 'Profesor actualizado correctamente.', severity: 'success' })
       } else {
-        await profesorService.create(values)
+        const created = await profesorService.create(data)
+        for (const especialidad of values.especialidades) {
+          await profesorService.assignEspecialidad(created.dni, especialidad.id)
+        }
         setSnackbar({ message: 'Profesor creado correctamente.', severity: 'success' })
       }
       await reload()
       setFormOpen(false)
       setEditing(null)
-    } catch {
+    } catch (error) {
+      console.error('Error al guardar profesor:', error)
       setSnackbar({
         message: 'No se pudo guardar el profesor. Intentá nuevamente.',
         severity: 'error',
@@ -167,6 +201,7 @@ function Profesores() {
       <ProfesorFormDialog
         open={formOpen}
         profesor={editing}
+        especialidades={especialidades}
         onClose={() => {
           setFormOpen(false)
           setEditing(null)

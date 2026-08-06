@@ -21,4 +21,10 @@ export const profesorService = {
   delete: async (dni: number): Promise<void> => {
     await api.delete(`/profesores/${dni}`)
   },
+  assignEspecialidad: async (dni: number, idEspecialidad: number): Promise<void> => {
+    await api.post(`/profesores/${dni}/especialidades`, { idEspecialidad })
+  },
+  removeEspecialidad: async (dni: number, idEspecialidad: number): Promise<void> => {
+    await api.delete(`/profesores/${dni}/especialidades/${idEspecialidad}`)
+  },
 }

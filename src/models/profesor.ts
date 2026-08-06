@@ -1,3 +1,5 @@
+import type { Especialidad } from './especialidad'
+
 export interface ProfesorEspecialidad {
   idEspecialidad: number
   nombre: string
@@ -13,3 +15,7 @@ export interface Profesor {
 }
 
 export type ProfesorInput = Omit<Profesor, 'especialidades'>
+
+export interface ProfesorFormValues extends ProfesorInput {
+  especialidades: Especialidad[]
+}
