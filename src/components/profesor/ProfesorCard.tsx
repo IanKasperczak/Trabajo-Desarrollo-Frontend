@@ -19,6 +19,8 @@ import type { Profesor } from '../../models/profesor'
 
 interface ProfesorCardProps {
   profesor: Profesor
+  expanded: boolean
+  onToggle: () => void
   onEdit: (profesor: Profesor) => void
   onDelete: (profesor: Profesor) => void
 }
@@ -27,12 +29,14 @@ function getInitials(nombre: string, apellido: string): string {
   return `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
 }
 
-function ProfesorCard({ profesor, onEdit, onDelete }: ProfesorCardProps) {
+function ProfesorCard({ profesor, expanded, onToggle, onEdit, onDelete }: ProfesorCardProps) {
   const { dni, nombre, apellido, email, telefono, especialidades } = profesor
 
   return (
     <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper' }}>
       <Accordion
+        expanded={expanded}
+        onChange={onToggle}
         disableGutters
         elevation={0}
         sx={{
