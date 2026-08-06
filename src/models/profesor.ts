@@ -1,11 +1,15 @@
-import type { Especialidad } from './especialidad'
+export interface ProfesorEspecialidad {
+  idEspecialidad: number
+  nombre: string
+}
 
 export interface Profesor {
-  id: number
+  dni: number
   nombre: string
   apellido: string
-  dni: string
-  email: string
   telefono: string
-  especialidades: Especialidad[]
+  email: string
+  especialidades: ProfesorEspecialidad[]
 }
+
+export type ProfesorInput = Omit<Profesor, 'especialidades'>

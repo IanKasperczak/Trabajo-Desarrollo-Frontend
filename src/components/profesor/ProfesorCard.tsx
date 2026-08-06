@@ -19,21 +19,19 @@ import type { Profesor } from '../../models/profesor'
 
 interface ProfesorCardProps {
   profesor: Profesor
+  onEdit: (profesor: Profesor) => void
+  onDelete: (profesor: Profesor) => void
 }
 
 function getInitials(nombre: string, apellido: string): string {
   return `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
 }
 
-function ProfesorCard({ profesor }: ProfesorCardProps) {
-  const { id, nombre, apellido, dni, email, telefono, especialidades } =
-    profesor
+function ProfesorCard({ profesor, onEdit, onDelete }: ProfesorCardProps) {
+  const { dni, nombre, apellido, email, telefono, especialidades } = profesor
 
   return (
-    <Card
-      variant="outlined"
-      sx={{ height: '100%', bgcolor: 'background.paper' }}
-    >
+    <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper' }}>
       <Accordion
         disableGutters
         elevation={0}
@@ -44,8 +42,8 @@ function ProfesorCard({ profesor }: ProfesorCardProps) {
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon color="primary" />}
-          aria-controls={`profesor-${id}-content`}
-          id={`profesor-${id}-header`}
+          aria-controls={`profesor-${dni}-content`}
+          id={`profesor-${dni}-header`}
           sx={{ px: 2, py: 1.5 }}
         >
           <Box
@@ -73,7 +71,7 @@ function ProfesorCard({ profesor }: ProfesorCardProps) {
             >
               {especialidades.map((esp) => (
                 <Chip
-                  key={esp.id}
+                  key={esp.idEspecialidad}
                   label={esp.nombre}
                   size="small"
                   color="primary"
@@ -96,6 +94,28 @@ function ProfesorCard({ profesor }: ProfesorCardProps) {
               <PhoneIcon fontSize="small" color="action" />
               <Typography variant="body2">{telefono}</Typography>
             </Box>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                Especialidades ({especialidades.length}):
+              </Typography>
+              <Stack
+                direction="row"
+                spacing={0.75}
+                flexWrap="wrap"
+                useFlexGap
+                sx={{ rowGap: 0.75, mt: 0.75 }}
+              >
+                {especialidades.map((esp) => (
+                  <Chip
+                    key={esp.idEspecialidad}
+                    label={esp.nombre}
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                  />
+                ))}
+              </Stack>
+            </Box>
           </Stack>
           <Box
             sx={{
@@ -110,6 +130,7 @@ function ProfesorCard({ profesor }: ProfesorCardProps) {
               color="primary"
               startIcon={<EditIcon />}
               size="small"
+              onClick={() => onEdit(profesor)}
             >
               Editar
             </Button>
@@ -118,6 +139,7 @@ function ProfesorCard({ profesor }: ProfesorCardProps) {
               color="error"
               startIcon={<DeleteIcon />}
               size="small"
+              onClick={() => onDelete(profesor)}
             >
               Eliminar
             </Button>
