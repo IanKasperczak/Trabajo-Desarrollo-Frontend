@@ -1,5 +1,8 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import MainLayout from '../components/layout/MainLayout'
+import ProtectedRoute from '../components/auth/ProtectedRoute'
+import HomeRedirect from '../components/auth/HomeRedirect'
+import Login from '../pages/Login'
 import AdminDashboard from '../pages/Dashboard/AdminDashboard'
 import ProfesorDashboard from '../pages/Dashboard/ProfesorDashboard'
 import ClienteDashboard from '../pages/Dashboard/ClienteDashboard'
@@ -22,10 +25,15 @@ import ClienteMiMembresia from '../pages/Cliente/MiMembresia'
 import ClienteMiPerfil from '../pages/Cliente/MiPerfil'
 
 export const router = createBrowserRouter([
-  { path: '/', element: <Navigate to="/admin" replace /> },
+  { path: '/', element: <HomeRedirect /> },
+  { path: '/login', element: <Login /> },
   {
     path: '/admin',
-    element: <MainLayout role="administrador" />,
+    element: (
+      <ProtectedRoute allowedRole="administrador">
+        <MainLayout role="administrador" />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: 'clientes', element: <Clientes /> },
@@ -40,7 +48,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/profesor',
-    element: <MainLayout role="profesor" />,
+    element: (
+      <ProtectedRoute allowedRole="profesor">
+        <MainLayout role="profesor" />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <ProfesorDashboard /> },
       { path: 'mis-clases', element: <ProfesorMisClases /> },
@@ -51,7 +63,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/cliente',
-    element: <MainLayout role="cliente" />,
+    element: (
+      <ProtectedRoute allowedRole="cliente">
+        <MainLayout role="cliente" />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <ClienteDashboard /> },
       { path: 'mis-clases', element: <ClienteMisClases /> },
@@ -61,4 +77,5 @@ export const router = createBrowserRouter([
       { path: 'mi-perfil', element: <ClienteMiPerfil /> },
     ],
   },
+  { path: '*', element: <HomeRedirect /> },
 ])

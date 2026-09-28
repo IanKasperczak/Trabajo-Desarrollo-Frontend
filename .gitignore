@@ -15,6 +15,7 @@ pnpm-debug.log*
 
 # Environment files (keep .env.example, ignore real ones)
 *.env
+.env.*
 !.env.example
 
 # Editor

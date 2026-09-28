@@ -173,6 +173,19 @@ Durante la evaluación de cada entrega se considerarán:
 
 En la sección de [FAQ](FAQ.md) podrán encontrar respuestas a las consultas más frecuentes que se van realizando.
 
+## 7. Ejecutar el frontend
+
+1. `npm install`
+2. Copiar `.env.example` a `.env` (dejar `VITE_API_URL=/api`).
+3. Levantar el backend (por defecto en `http://localhost:3000`) y después `npm run dev`.
+
+### Login y sesión
+- La app arranca en `/login`. No hay registro: las cuentas las crea un administrador desde el backend.
+- La sesión es una cookie httpOnly que maneja el backend: el frontend no guarda ningún token (ni en `localStorage` ni en memoria), así que un XSS no puede robarla.
+- El frontend siempre le pide la API a su propio origen (`/api`). En desarrollo, Vite reenvía `/api` al backend (`API_PROXY_TARGET` en `.env`); en producción lo hace Vercel (`vercel.json`). Así la cookie es del mismo sitio y funciona en todos los navegadores, incluido Safari.
+- Cada rol solo ve su sección (`/admin`, `/profesor`, `/cliente`). Esto es solo de interfaz: los permisos reales los valida el backend en cada request.
+- Si la sesión vence o se revoca, cualquier request que devuelva `401` lleva de nuevo al login.
+
 ## 7. Configuración del Backend
 
 El backend usa **Sequelize** con **PostgreSQL** (Supabase).

@@ -19,7 +19,7 @@ import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
 import type { Theme } from '@mui/material'
 import type { Role } from '../../models/role'
 import { roleBase, roleNav } from '../../utils/navigation'
-import RoleSwitcher from '../role/RoleSwitcher'
+import UserMenu from '../auth/UserMenu'
 
 const DRAWER_WIDTH = 240
 const APP_NAME = 'Gimnasio Power Trainer'
@@ -142,7 +142,7 @@ function MainLayout({ role }: MainLayoutProps) {
             {APP_NAME}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <RoleSwitcher />
+          <UserMenu />
         </Toolbar>
       </AppBar>
 
