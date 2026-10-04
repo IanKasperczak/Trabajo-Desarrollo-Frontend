@@ -80,10 +80,9 @@ function Clientes() {
           apellido: values.apellido,
           telefono: values.telefono,
           email: values.email,
-          password: values.password,
         })
         setSnackbar({
-          message: 'Cliente creado. Ya puede entrar a la app con su email y la contraseña inicial.',
+          message: 'Cliente creado. Ya puede entrar a la app con su email y su DNI como contraseña.',
           severity: 'success',
         })
       }

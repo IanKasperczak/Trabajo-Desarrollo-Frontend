@@ -15,6 +15,7 @@ import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import KeyIcon from '@mui/icons-material/Key'
 import type { Profesor } from '../../models/profesor'
 
 interface ProfesorCardProps {
@@ -23,14 +24,22 @@ interface ProfesorCardProps {
   onToggle: () => void
   onEdit: (profesor: Profesor) => void
   onDelete: (profesor: Profesor) => void
+  onDarAcceso: (profesor: Profesor) => void
 }
 
 function getInitials(nombre: string, apellido: string): string {
   return `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
 }
 
-function ProfesorCard({ profesor, expanded, onToggle, onEdit, onDelete }: ProfesorCardProps) {
-  const { dni, nombre, apellido, email, telefono, especialidades } = profesor
+function ProfesorCard({
+  profesor,
+  expanded,
+  onToggle,
+  onEdit,
+  onDelete,
+  onDarAcceso,
+}: ProfesorCardProps) {
+  const { dni, nombre, apellido, email, telefono, especialidades, tieneCuenta } = profesor
 
   return (
     <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper' }}>
@@ -84,9 +93,12 @@ function ProfesorCard({ profesor, expanded, onToggle, onEdit, onDelete }: Profes
                 />
               ))}
             </Stack>
-            <Typography variant="body2" color="text.secondary">
-              DNI: {dni}
-            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography variant="body2" color="text.secondary" noWrap>
+                DNI: {dni}
+              </Typography>
+              {!tieneCuenta && <Chip label="Sin acceso" size="small" variant="outlined" />}
+            </Stack>
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2, pb: 2, pt: 0 }}>
@@ -121,6 +133,11 @@ function ProfesorCard({ profesor, expanded, onToggle, onEdit, onDelete }: Profes
                 ))}
               </Stack>
             </Box>
+            <Typography variant="caption" color="text.secondary">
+              {tieneCuenta
+                ? 'Puede entrar a la app con su email.'
+                : 'Todavía no tiene acceso a la app.'}
+            </Typography>
           </Stack>
           <Box
             sx={{
@@ -148,6 +165,18 @@ function ProfesorCard({ profesor, expanded, onToggle, onEdit, onDelete }: Profes
             >
               Eliminar
             </Button>
+            {!tieneCuenta && (
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<KeyIcon />}
+                size="small"
+                onClick={() => onDarAcceso(profesor)}
+                sx={{ color: 'text.primary' }}
+              >
+                Dar acceso
+              </Button>
+            )}
           </Box>
         </AccordionDetails>
       </Accordion>

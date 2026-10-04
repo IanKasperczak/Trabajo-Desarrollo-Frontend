@@ -1,6 +1,12 @@
 import api from '../api/api'
 import type { Role } from '../models/role'
-import type { LoginInput, RolApi, Usuario, UsuarioApi } from '../models/usuario'
+import type {
+  CambiarPasswordInput,
+  LoginInput,
+  RolApi,
+  Usuario,
+  UsuarioApi,
+} from '../models/usuario'
 
 const rolDesdeApi: Record<RolApi, Role> = {
   admin: 'administrador',
@@ -24,5 +30,9 @@ export const authService = {
   me: async (): Promise<Usuario> => {
     const response = await api.get<UsuarioApi>('/auth/me')
     return toUsuario(response.data)
+  },
+  // El backend cierra las demás sesiones y le manda a esta una cookie nueva
+  cambiarPassword: async (data: CambiarPasswordInput): Promise<void> => {
+    await api.put('/auth/password', data)
   },
 }

@@ -20,6 +20,7 @@ import ListSkeleton from '../../components/ui/ListSkeleton'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { profesorService } from '../../services/profesorService'
 import { especialidadService } from '../../services/especialidadService'
+import { mensajeDeErrorApi } from '../../utils/apiError'
 import type { Profesor, ProfesorFormValues } from '../../models/profesor'
 
 type SnackbarState = { message: string; severity: 'success' | 'error' } | null
@@ -89,19 +90,39 @@ function Profesores() {
         }
         setSnackbar({ message: 'Profesor actualizado correctamente.', severity: 'success' })
       } else {
-        const created = await profesorService.create(data)
+        const created = await profesorService.create({ ...data, crearCuenta: values.crearCuenta })
         for (const especialidad of values.especialidades) {
           await profesorService.assignEspecialidad(created.dni, especialidad.id)
         }
-        setSnackbar({ message: 'Profesor creado correctamente.', severity: 'success' })
+        setSnackbar({
+          message: values.crearCuenta
+            ? 'Profesor creado. Ya puede entrar a la app con su email y su DNI como contraseña.'
+            : 'Profesor creado correctamente.',
+          severity: 'success',
+        })
       }
       await reload()
       setFormOpen(false)
       setEditing(null)
     } catch (error) {
-      console.error('Error al guardar profesor:', error)
       setSnackbar({
-        message: 'No se pudo guardar el profesor. Intentá nuevamente.',
+        message: mensajeDeErrorApi(error, 'No se pudo guardar el profesor. Intentá nuevamente.'),
+        severity: 'error',
+      })
+    }
+  }
+
+  const handleDarAcceso = async (profesor: Profesor) => {
+    try {
+      await profesorService.crearCuenta(profesor.dni)
+      setSnackbar({
+        message: `${profesor.nombre} ya puede entrar a la app con su email y su DNI como contraseña.`,
+        severity: 'success',
+      })
+      await reload()
+    } catch (error) {
+      setSnackbar({
+        message: mensajeDeErrorApi(error, 'No se pudo dar acceso al profesor. Intentá nuevamente.'),
         severity: 'error',
       })
     }
@@ -113,9 +134,9 @@ function Profesores() {
       await profesorService.delete(deleting.dni)
       setSnackbar({ message: 'Profesor eliminado correctamente.', severity: 'success' })
       await reload()
-    } catch {
+    } catch (error) {
       setSnackbar({
-        message: 'No se pudo eliminar el profesor. Intentá nuevamente.',
+        message: mensajeDeErrorApi(error, 'No se pudo eliminar el profesor. Intentá nuevamente.'),
         severity: 'error',
       })
     } finally {
@@ -195,6 +216,7 @@ function Profesores() {
           profesores={filtered}
           onEdit={handleOpenEdit}
           onDelete={setDeleting}
+          onDarAcceso={handleDarAcceso}
         />
       )}
 
@@ -214,7 +236,7 @@ function Profesores() {
         title="Eliminar Profesor"
         message={
           deleting
-            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}? Esta acción no se puede deshacer.`
+            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}?${deleting.tieneCuenta ? ' También se elimina su cuenta y ya no va a poder entrar a la app.' : ''} Esta acción no se puede deshacer.`
             : ''
         }
         onConfirm={handleConfirmDelete}

@@ -8,6 +8,7 @@ export interface UsuarioApi {
   email: string
   rol: RolApi
   dniProfesor: number | null
+  debeCambiarPassword: boolean
 }
 
 export interface Usuario {
@@ -15,9 +16,16 @@ export interface Usuario {
   email: string
   rol: Role
   dniProfesor: number | null
+  // true mientras siga con la contraseña que le dio el admin (por defecto, su DNI)
+  debeCambiarPassword: boolean
 }
 
 export interface LoginInput {
   email: string
   password: string
+}
+
+export interface CambiarPasswordInput {
+  passwordActual: string
+  passwordNueva: string
 }

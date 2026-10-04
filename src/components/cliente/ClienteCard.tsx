@@ -30,7 +30,7 @@ function getInitials(nombre: string, apellido: string): string {
 }
 
 function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteCardProps) {
-  const { dni, nombre, apellido, email, telefono, activo } = cliente
+  const { dni, nombre, apellido, email, telefono, activo, debeCambiarPassword } = cliente
 
   return (
     <Card
@@ -68,6 +68,9 @@ function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteC
                 DNI: {dni}
               </Typography>
               {!activo && <Chip label="Sin acceso" size="small" variant="outlined" />}
+              {activo && debeCambiarPassword && (
+                <Chip label="Contraseña inicial" size="small" color="warning" variant="outlined" />
+              )}
             </Stack>
           </Box>
         </AccordionSummary>
@@ -84,7 +87,11 @@ function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteC
               <Typography variant="body2">{telefono}</Typography>
             </Box>
             <Typography variant="caption" color="text.secondary">
-              {activo ? 'Puede entrar a la app con su email.' : 'Su acceso a la app está deshabilitado.'}
+              {!activo
+                ? 'Su acceso a la app está deshabilitado.'
+                : debeCambiarPassword
+                  ? 'Puede entrar con su email. Todavía no eligió su propia contraseña.'
+                  : 'Puede entrar a la app con su email.'}
             </Typography>
           </Stack>
           <Box

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  Alert,
   Button,
   CircularProgress,
   DialogActions,
@@ -49,12 +50,12 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
     setShowPassword(false)
   }, [cliente])
 
-  // Al crear la contraseña es obligatoria; al editar, vacía significa "no cambiarla"
+  // Al crear no se pide: la contraseña inicial es el DNI. Al editar, vacía significa "no cambiarla"
   const passwordError =
     form.password !== '' && form.password.length < PASSWORD_MIN
       ? `Mínimo ${PASSWORD_MIN} caracteres`
       : null
-  const passwordValida = isEditing ? passwordError === null : form.password.length >= PASSWORD_MIN
+  const passwordValida = passwordError === null
 
   const isFormValid = useMemo(
     () =>
@@ -141,8 +142,15 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
             required
             fullWidth
           />
+          {!isEditing && (
+            <Alert severity="info">
+              La contraseña inicial es el <strong>DNI</strong> del cliente. Cuando entre, va a ver un
+              aviso para elegir la suya desde Configuración.
+            </Alert>
+          )}
+          {isEditing && (
           <TextField
-            label={isEditing ? 'Nueva contraseña (opcional)' : 'Contraseña inicial'}
+            label="Nueva contraseña (opcional)"
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
             value={form.password}
@@ -150,11 +158,8 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
             error={passwordError !== null}
             helperText={
               passwordError ??
-              (isEditing
-                ? 'Dejala vacía para no cambiarla. Si la cambiás, se cierran sus sesiones abiertas.'
-                : `Mínimo ${PASSWORD_MIN} caracteres. Pasásela al cliente para su primer ingreso.`)
+              'Dejala vacía para no cambiarla. Si la cambiás, se cierran sus sesiones abiertas y se le pide que elija una propia.'
             }
-            required={!isEditing}
             fullWidth
             slotProps={{
               input: {
@@ -172,6 +177,7 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
               },
             }}
           />
+          )}
           {isEditing && (
             <FormControlLabel
               control={

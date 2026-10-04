@@ -10,6 +10,7 @@ import CategoryIcon from '@mui/icons-material/Category'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import SettingsIcon from '@mui/icons-material/Settings'
 import type { SvgIconComponent } from '@mui/icons-material'
 import type { Role } from '../models/role'
 
@@ -36,6 +37,7 @@ export const roleNav: Record<Role, NavItem[]> = {
     { label: 'Rutinas', path: 'rutinas', icon: AssignmentIcon },
     { label: 'Salones', path: 'salones', icon: MeetingRoomIcon },
     { label: 'Especialidades', path: 'especialidades', icon: CategoryIcon },
+    { label: 'Configuración', path: 'configuracion', icon: SettingsIcon },
   ],
   profesor: [
     { label: 'Dashboard', path: '/', icon: DashboardIcon },
@@ -43,6 +45,7 @@ export const roleNav: Record<Role, NavItem[]> = {
     { label: 'Mis Turnos', path: 'mis-turnos', icon: ScheduleIcon },
     { label: 'Mis Rutinas', path: 'mis-rutinas', icon: AssignmentIcon },
     { label: 'Mi Perfil', path: 'mi-perfil', icon: AccountCircleIcon },
+    { label: 'Configuración', path: 'configuracion', icon: SettingsIcon },
   ],
   cliente: [
     { label: 'Dashboard', path: '/', icon: DashboardIcon },
@@ -51,5 +54,6 @@ export const roleNav: Record<Role, NavItem[]> = {
     { label: 'Mis Rutinas', path: 'mis-rutinas', icon: AssignmentIcon },
     { label: 'Mi Membresía', path: 'mi-membresia', icon: CardMembershipIcon },
     { label: 'Mi Perfil', path: 'mi-perfil', icon: AccountCircleIcon },
+    { label: 'Configuración', path: 'configuracion', icon: SettingsIcon },
   ],
 }

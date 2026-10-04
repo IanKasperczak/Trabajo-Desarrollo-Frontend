@@ -7,6 +7,7 @@ import BadgeIcon from '@mui/icons-material/Badge'
 import StatCard from '../../components/dashboard/common/StatCard'
 import SectionCard from '../../components/dashboard/common/SectionCard'
 import AlertList from '../../components/dashboard/common/AlertList'
+import AvisoPasswordInicial from '../../components/dashboard/common/AvisoPasswordInicial'
 import QuickActions from '../../components/dashboard/common/QuickActions'
 import type { QuickActionItem } from '../../components/dashboard/common/QuickActions'
 import {
@@ -42,6 +43,8 @@ function ProfesorDashboard() {
           }}
         />
       </Box>
+
+      <AvisoPasswordInicial />
 
       <Card
         variant="outlined"

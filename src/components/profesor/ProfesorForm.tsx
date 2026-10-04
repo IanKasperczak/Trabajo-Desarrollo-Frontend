@@ -6,7 +6,10 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  FormControlLabel,
+  FormHelperText,
   Stack,
+  Switch,
   TextField,
 } from '@mui/material'
 import type { Especialidad } from '../../models/especialidad'
@@ -26,6 +29,8 @@ const emptyForm: ProfesorFormValues = {
   telefono: '',
   email: '',
   especialidades: [],
+  // Por defecto se le da acceso: casi todos los profesores usan la app
+  crearCuenta: true,
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -53,6 +58,8 @@ function ProfesorForm({
             (asignada) => asignada.idEspecialidad === especialidad.id,
           ),
         ),
+        // Al editar no se usa: el acceso se da con el botón "Dar acceso" de la tarjeta
+        crearCuenta: false,
       })
     } else {
       setForm(emptyForm)
@@ -70,7 +77,7 @@ function ProfesorForm({
   )
 
   const handleChange =
-    (field: keyof Omit<ProfesorFormValues, 'especialidades'>) =>
+    (field: keyof Omit<ProfesorFormValues, 'especialidades' | 'crearCuenta'>) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value =
         field === 'dni'
@@ -89,6 +96,7 @@ function ProfesorForm({
         telefono: form.telefono.trim(),
         email: form.email.trim(),
         especialidades: form.especialidades,
+        crearCuenta: form.crearCuenta,
       })
     } finally {
       setSubmitting(false)
@@ -168,6 +176,26 @@ function ProfesorForm({
             }
             fullWidth
           />
+          {!isEditing && (
+            <div>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={form.crearCuenta}
+                    onChange={(event) =>
+                      setForm((prev) => ({ ...prev, crearCuenta: event.target.checked }))
+                    }
+                  />
+                }
+                label="Darle acceso a la app"
+              />
+              <FormHelperText sx={{ mt: 0 }}>
+                {form.crearCuenta
+                  ? 'Va a poder entrar con su email y su DNI como contraseña, y después elegir la suya.'
+                  : 'Podés darle acceso más adelante desde su tarjeta.'}
+              </FormHelperText>
+            </div>
+          )}
         </Stack>
       </DialogContent>
       <DialogActions>
