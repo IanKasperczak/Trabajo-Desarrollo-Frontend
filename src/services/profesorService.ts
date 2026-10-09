@@ -1,5 +1,5 @@
 import api from '../api/api'
-import type { Profesor, ProfesorInput } from '../models/profesor'
+import type { Profesor, ProfesorCreateInput, ProfesorInput } from '../models/profesor'
 
 export const profesorService = {
   getAll: async (): Promise<Profesor[]> => {
@@ -10,9 +10,13 @@ export const profesorService = {
     const response = await api.get<Profesor>(`/profesores/${dni}`)
     return response.data
   },
-  create: async (data: ProfesorInput): Promise<ProfesorInput> => {
+  create: async (data: ProfesorCreateInput): Promise<ProfesorInput> => {
     const response = await api.post<ProfesorInput>('/profesores', data)
     return response.data
+  },
+  // Le crea la cuenta para entrar a la app; la contraseña inicial es su DNI
+  crearCuenta: async (dni: number): Promise<void> => {
+    await api.post(`/profesores/${dni}/cuenta`)
   },
   update: async (dni: number, data: Partial<ProfesorInput>): Promise<ProfesorInput> => {
     const response = await api.put<ProfesorInput>(`/profesores/${dni}`, data)

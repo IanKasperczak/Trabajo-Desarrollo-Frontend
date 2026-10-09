@@ -23,6 +23,7 @@ import ClienteReservarClase from '../pages/Cliente/ReservarClase'
 import ClienteMisRutinas from '../pages/Cliente/MisRutinas'
 import ClienteMiMembresia from '../pages/Cliente/MiMembresia'
 import ClienteMiPerfil from '../pages/Cliente/MiPerfil'
+import Configuracion from '../pages/Configuracion'
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomeRedirect /> },
@@ -44,6 +45,7 @@ export const router = createBrowserRouter([
       { path: 'rutinas', element: <Rutinas /> },
       { path: 'salones', element: <Salones /> },
       { path: 'especialidades', element: <Especialidades /> },
+      { path: 'configuracion', element: <Configuracion /> },
     ],
   },
   {
@@ -59,6 +61,7 @@ export const router = createBrowserRouter([
       { path: 'mis-turnos', element: <ProfesorMisTurnos /> },
       { path: 'mis-rutinas', element: <ProfesorMisRutinas /> },
       { path: 'mi-perfil', element: <ProfesorMiPerfil /> },
+      { path: 'configuracion', element: <Configuracion /> },
     ],
   },
   {
@@ -75,6 +78,7 @@ export const router = createBrowserRouter([
       { path: 'mis-rutinas', element: <ClienteMisRutinas /> },
       { path: 'mi-membresia', element: <ClienteMiMembresia /> },
       { path: 'mi-perfil', element: <ClienteMiPerfil /> },
+      { path: 'configuracion', element: <Configuracion /> },
     ],
   },
   { path: '*', element: <HomeRedirect /> },

@@ -12,6 +12,7 @@ import BarsChart from '../../components/dashboard/common/BarsChart'
 import GroupedBarsChart from '../../components/dashboard/common/GroupedBarsChart'
 import RankingList from '../../components/dashboard/common/RankingList'
 import AlertList from '../../components/dashboard/common/AlertList'
+import AvisoPasswordInicial from '../../components/dashboard/common/AvisoPasswordInicial'
 import QuickActions from '../../components/dashboard/common/QuickActions'
 import type { QuickActionItem } from '../../components/dashboard/common/QuickActions'
 import {
@@ -48,6 +49,8 @@ function AdminDashboard() {
           }}
         />
       </Box>
+
+      <AvisoPasswordInicial />
 
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {adminKpis.map((kpi, index) => (

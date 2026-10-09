@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { setUnauthorizedHandler } from '../api/api'
 import { authService } from '../services/authService'
-import type { LoginInput, Usuario } from '../models/usuario'
+import type { CambiarPasswordInput, LoginInput, Usuario } from '../models/usuario'
 import { AuthContext } from './AuthContext'
 import type { AuthStatus } from './AuthContext'
 
@@ -58,9 +58,15 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [clearSession])
 
+  // Después de elegir su propia contraseña, deja de mostrarse el aviso de la contraseña inicial
+  const cambiarPassword = useCallback(async (data: CambiarPasswordInput) => {
+    await authService.cambiarPassword(data)
+    setUsuario((prev) => (prev ? { ...prev, debeCambiarPassword: false } : prev))
+  }, [])
+
   const value = useMemo(
-    () => ({ usuario, status, login, logout }),
-    [usuario, status, login, logout],
+    () => ({ usuario, status, login, logout, cambiarPassword }),
+    [usuario, status, login, logout, cambiarPassword],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

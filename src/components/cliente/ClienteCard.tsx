@@ -16,33 +16,45 @@ import PhoneIcon from '@mui/icons-material/Phone'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import KeyIcon from '@mui/icons-material/Key'
-import type { Profesor } from '../../models/profesor'
+import type { Cliente } from '../../models/cliente'
 
-interface ProfesorCardProps {
-  profesor: Profesor
+interface ClienteCardProps {
+  cliente: Cliente
   expanded: boolean
   onToggle: () => void
-  onEdit: (profesor: Profesor) => void
-  onDelete: (profesor: Profesor) => void
-  onDarAcceso: (profesor: Profesor) => void
+  onEdit: (cliente: Cliente) => void
+  onDelete: (cliente: Cliente) => void
+  onDarAcceso: (cliente: Cliente) => void
 }
 
 function getInitials(nombre: string, apellido: string): string {
   return `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
 }
 
-function ProfesorCard({
-  profesor,
+function textoAcceso({ tieneCuenta, activo, debeCambiarPassword }: Cliente): string {
+  if (!tieneCuenta) return 'Todavía no tiene acceso a la app.'
+  if (!activo) return 'Su acceso a la app está deshabilitado.'
+  if (debeCambiarPassword) return 'Puede entrar con su email. Todavía no eligió su propia contraseña.'
+  return 'Puede entrar a la app con su email.'
+}
+
+function ClienteCard({
+  cliente,
   expanded,
   onToggle,
   onEdit,
   onDelete,
   onDarAcceso,
-}: ProfesorCardProps) {
-  const { dni, nombre, apellido, email, telefono, especialidades, tieneCuenta } = profesor
+}: ClienteCardProps) {
+  const { dni, nombre, apellido, email, telefono, tieneCuenta, activo, debeCambiarPassword } =
+    cliente
+  const puedeEntrar = tieneCuenta && activo
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper' }}>
+    <Card
+      variant="outlined"
+      sx={{ height: '100%', bgcolor: 'background.paper', opacity: puedeEntrar ? 1 : 0.85 }}
+    >
       <Accordion
         expanded={expanded}
         onChange={onToggle}
@@ -55,19 +67,12 @@ function ProfesorCard({
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon color="primary" />}
-          aria-controls={`profesor-${dni}-content`}
-          id={`profesor-${dni}-header`}
+          aria-controls={`cliente-${dni}-content`}
+          id={`cliente-${dni}-header`}
           sx={{ px: 2, py: 1.5 }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-              minWidth: 0,
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, minWidth: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
               <Avatar sx={{ bgcolor: 'primary.main', color: 'text.primary' }}>
                 {getInitials(nombre, apellido)}
               </Avatar>
@@ -76,67 +81,33 @@ function ProfesorCard({
                 {nombre} {apellido}
               </Typography>
             </Box>
-            <Stack
-              direction="row"
-              spacing={0.75}
-              flexWrap="wrap"
-              useFlexGap
-              sx={{ rowGap: 0.75 }}
-            >
-              {especialidades.map((esp) => (
-                <Chip
-                  key={esp.idEspecialidad}
-                  label={esp.nombre}
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                />
-              ))}
-            </Stack>
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography variant="body2" color="text.secondary" noWrap>
                 DNI: {dni}
               </Typography>
-              {!tieneCuenta && <Chip label="Sin acceso" size="small" variant="outlined" />}
+              {!puedeEntrar && <Chip label="Sin acceso" size="small" variant="outlined" />}
+              {puedeEntrar && debeCambiarPassword && (
+                <Chip label="Contraseña inicial" size="small" color="warning" variant="outlined" />
+              )}
             </Stack>
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2, pb: 2, pt: 0 }}>
           <Stack spacing={1.25} sx={{ mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
               <EmailIcon fontSize="small" color="action" />
-              <Typography variant="body2">{email}</Typography>
+              <Typography variant="body2" noWrap color={email ? 'text.primary' : 'text.secondary'}>
+                {email ?? 'Sin email'}
+              </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PhoneIcon fontSize="small" color="action" />
-              <Typography variant="body2">{telefono}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="caption" color="text.secondary">
-                Especialidades ({especialidades.length}):
+              <Typography variant="body2" color={telefono ? 'text.primary' : 'text.secondary'}>
+                {telefono ?? 'Sin teléfono'}
               </Typography>
-              <Stack
-                direction="row"
-                spacing={0.75}
-                flexWrap="wrap"
-                useFlexGap
-                sx={{ rowGap: 0.75, mt: 0.75 }}
-              >
-                {especialidades.map((esp) => (
-                  <Chip
-                    key={esp.idEspecialidad}
-                    label={esp.nombre}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                ))}
-              </Stack>
             </Box>
             <Typography variant="caption" color="text.secondary">
-              {tieneCuenta
-                ? 'Puede entrar a la app con su email.'
-                : 'Todavía no tiene acceso a la app.'}
+              {textoAcceso(cliente)}
             </Typography>
           </Stack>
           <Box
@@ -152,7 +123,7 @@ function ProfesorCard({
               color="primary"
               startIcon={<EditIcon />}
               size="small"
-              onClick={() => onEdit(profesor)}
+              onClick={() => onEdit(cliente)}
             >
               Editar
             </Button>
@@ -161,7 +132,7 @@ function ProfesorCard({
               color="error"
               startIcon={<DeleteIcon />}
               size="small"
-              onClick={() => onDelete(profesor)}
+              onClick={() => onDelete(cliente)}
             >
               Eliminar
             </Button>
@@ -171,7 +142,7 @@ function ProfesorCard({
                 color="primary"
                 startIcon={<KeyIcon />}
                 size="small"
-                onClick={() => onDarAcceso(profesor)}
+                onClick={() => onDarAcceso(cliente)}
                 sx={{ color: 'text.primary' }}
               >
                 Dar acceso
@@ -184,4 +155,4 @@ function ProfesorCard({
   )
 }
 
-export default ProfesorCard
+export default ClienteCard

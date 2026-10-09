@@ -6,6 +6,7 @@ import NewspaperIcon from '@mui/icons-material/Newspaper'
 import StarIcon from '@mui/icons-material/Star'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import SectionCard from '../../components/dashboard/common/SectionCard'
+import AvisoPasswordInicial from '../../components/dashboard/common/AvisoPasswordInicial'
 import QuickActions from '../../components/dashboard/common/QuickActions'
 import type { QuickActionItem } from '../../components/dashboard/common/QuickActions'
 import {
@@ -41,6 +42,8 @@ function ClienteDashboard() {
           }}
         />
       </Box>
+
+      <AvisoPasswordInicial />
 
       {proximaAVencer && (
         <Card
