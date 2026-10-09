@@ -7,15 +7,13 @@ import {
   DialogContent,
   Divider,
   FormControlLabel,
-  IconButton,
-  InputAdornment,
+  FormHelperText,
   Stack,
   Switch,
   TextField,
   Typography,
 } from '@mui/material'
-import Visibility from '@mui/icons-material/Visibility'
-import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import PasswordField from '../ui/PasswordField'
 import type { Cliente, ClienteFormValues } from '../../models/cliente'
 
 interface ClienteFormProps {
@@ -32,40 +30,59 @@ const emptyForm: ClienteFormValues = {
   email: '',
   password: '',
   activo: true,
+  // Por defecto se le da acceso: casi todos los clientes usan la app para reservar
+  crearCuenta: true,
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PASSWORD_MIN = 8
 
-type CampoDeTexto = keyof Omit<ClienteFormValues, 'activo'>
+type CampoDeTexto = 'dni' | 'nombre' | 'apellido' | 'telefono' | 'email' | 'password'
 
 function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
   const isEditing = cliente !== null
   const [form, setForm] = useState<ClienteFormValues>(emptyForm)
-  const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    setForm(cliente ? { ...cliente, password: '' } : emptyForm)
-    setShowPassword(false)
+    setForm(
+      cliente
+        ? {
+            dni: cliente.dni,
+            nombre: cliente.nombre,
+            apellido: cliente.apellido,
+            telefono: cliente.telefono ?? '',
+            email: cliente.email ?? '',
+            password: '',
+            activo: cliente.activo,
+            crearCuenta: false,
+          }
+        : emptyForm,
+    )
   }, [cliente])
 
-  // Al crear no se pide: la contraseña inicial es el DNI. Al editar, vacía significa "no cambiarla"
+  // Con cuenta (o si se la va a crear) el email es obligatorio: es su usuario para entrar
+  const conCuenta = isEditing ? cliente.tieneCuenta : form.crearCuenta
+  const email = form.email.trim()
+  const emailError =
+    email !== '' && !EMAIL_REGEX.test(email)
+      ? 'Email inválido'
+      : email === '' && conCuenta
+        ? 'Obligatorio para entrar a la app'
+        : null
   const passwordError =
     form.password !== '' && form.password.length < PASSWORD_MIN
       ? `Mínimo ${PASSWORD_MIN} caracteres`
       : null
-  const passwordValida = passwordError === null
 
   const isFormValid = useMemo(
     () =>
       (isEditing || form.dni > 0) &&
       form.nombre.trim() !== '' &&
       form.apellido.trim() !== '' &&
-      form.telefono.trim() !== '' &&
-      EMAIL_REGEX.test(form.email.trim()) &&
-      passwordValida,
-    [isEditing, form, passwordValida],
+      emailError === null &&
+      passwordError === null,
+    [isEditing, form, emailError, passwordError],
   )
 
   const handleChange =
@@ -83,7 +100,7 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
         nombre: form.nombre.trim(),
         apellido: form.apellido.trim(),
         telefono: form.telefono.trim(),
-        email: form.email.trim(),
+        email,
       })
     } finally {
       setSubmitting(false)
@@ -124,72 +141,79 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
             type="tel"
             value={form.telefono}
             onChange={handleChange('telefono')}
-            required
             fullWidth
           />
-
-          <Divider />
-          <Typography variant="subtitle2" color="text.secondary">
-            Cuenta para entrar a la app
-          </Typography>
           <TextField
             label="Email"
             type="email"
             autoComplete="off"
             value={form.email}
             onChange={handleChange('email')}
-            helperText="Es el usuario con el que el cliente inicia sesión"
-            required
+            error={emailError !== null && (email !== '' || conCuenta)}
+            helperText={emailError ?? (conCuenta ? 'Es el usuario con el que entra a la app' : ' ')}
+            required={conCuenta}
             fullWidth
           />
+
+          <Divider />
+          <Typography variant="subtitle2" color="text.secondary">
+            Acceso a la app
+          </Typography>
+
           {!isEditing && (
+            <div>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={form.crearCuenta}
+                    onChange={(event) =>
+                      setForm((prev) => ({ ...prev, crearCuenta: event.target.checked }))
+                    }
+                  />
+                }
+                label="Darle acceso a la app"
+              />
+              <FormHelperText sx={{ mt: 0 }}>
+                {form.crearCuenta
+                  ? 'Va a poder entrar con su email y su DNI como contraseña, y después elegir la suya desde Configuración.'
+                  : 'Podés darle acceso más adelante desde su tarjeta.'}
+              </FormHelperText>
+            </div>
+          )}
+
+          {isEditing && !cliente.tieneCuenta && (
             <Alert severity="info">
-              La contraseña inicial es el <strong>DNI</strong> del cliente. Cuando entre, va a ver un
-              aviso para elegir la suya desde Configuración.
+              Todavía no tiene acceso a la app. Podés dárselo con el botón <strong>Dar acceso</strong>{' '}
+              de su tarjeta.
             </Alert>
           )}
-          {isEditing && (
-          <TextField
-            label="Nueva contraseña (opcional)"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete="new-password"
-            value={form.password}
-            onChange={handleChange('password')}
-            error={passwordError !== null}
-            helperText={
-              passwordError ??
-              'Dejala vacía para no cambiarla. Si la cambiás, se cierran sus sesiones abiertas y se le pide que elija una propia.'
-            }
-            fullWidth
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-          )}
-          {isEditing && (
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={form.activo}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, activo: event.target.checked }))
-                  }
-                />
-              }
-              label={form.activo ? 'Acceso a la app habilitado' : 'Acceso a la app deshabilitado'}
-            />
+
+          {isEditing && cliente.tieneCuenta && (
+            <>
+              <PasswordField
+                label="Nueva contraseña (opcional)"
+                autoComplete="new-password"
+                value={form.password}
+                onChange={handleChange('password')}
+                error={passwordError !== null}
+                helperText={
+                  passwordError ??
+                  'Dejala vacía para no cambiarla. Si la cambiás, se cierran sus sesiones abiertas y se le pide que elija una propia.'
+                }
+                fullWidth
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={form.activo}
+                    onChange={(event) =>
+                      setForm((prev) => ({ ...prev, activo: event.target.checked }))
+                    }
+                  />
+                }
+                label={form.activo ? 'Acceso a la app habilitado' : 'Acceso a la app deshabilitado'}
+              />
+            </>
           )}
         </Stack>
       </DialogContent>

@@ -15,6 +15,7 @@ import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import KeyIcon from '@mui/icons-material/Key'
 import type { Cliente } from '../../models/cliente'
 
 interface ClienteCardProps {
@@ -23,19 +24,36 @@ interface ClienteCardProps {
   onToggle: () => void
   onEdit: (cliente: Cliente) => void
   onDelete: (cliente: Cliente) => void
+  onDarAcceso: (cliente: Cliente) => void
 }
 
 function getInitials(nombre: string, apellido: string): string {
   return `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
 }
 
-function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteCardProps) {
-  const { dni, nombre, apellido, email, telefono, activo, debeCambiarPassword } = cliente
+function textoAcceso({ tieneCuenta, activo, debeCambiarPassword }: Cliente): string {
+  if (!tieneCuenta) return 'Todavía no tiene acceso a la app.'
+  if (!activo) return 'Su acceso a la app está deshabilitado.'
+  if (debeCambiarPassword) return 'Puede entrar con su email. Todavía no eligió su propia contraseña.'
+  return 'Puede entrar a la app con su email.'
+}
+
+function ClienteCard({
+  cliente,
+  expanded,
+  onToggle,
+  onEdit,
+  onDelete,
+  onDarAcceso,
+}: ClienteCardProps) {
+  const { dni, nombre, apellido, email, telefono, tieneCuenta, activo, debeCambiarPassword } =
+    cliente
+  const puedeEntrar = tieneCuenta && activo
 
   return (
     <Card
       variant="outlined"
-      sx={{ height: '100%', bgcolor: 'background.paper', opacity: activo ? 1 : 0.75 }}
+      sx={{ height: '100%', bgcolor: 'background.paper', opacity: puedeEntrar ? 1 : 0.85 }}
     >
       <Accordion
         expanded={expanded}
@@ -67,8 +85,8 @@ function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteC
               <Typography variant="body2" color="text.secondary" noWrap>
                 DNI: {dni}
               </Typography>
-              {!activo && <Chip label="Sin acceso" size="small" variant="outlined" />}
-              {activo && debeCambiarPassword && (
+              {!puedeEntrar && <Chip label="Sin acceso" size="small" variant="outlined" />}
+              {puedeEntrar && debeCambiarPassword && (
                 <Chip label="Contraseña inicial" size="small" color="warning" variant="outlined" />
               )}
             </Stack>
@@ -78,20 +96,18 @@ function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteC
           <Stack spacing={1.25} sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
               <EmailIcon fontSize="small" color="action" />
-              <Typography variant="body2" noWrap>
-                {email}
+              <Typography variant="body2" noWrap color={email ? 'text.primary' : 'text.secondary'}>
+                {email ?? 'Sin email'}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PhoneIcon fontSize="small" color="action" />
-              <Typography variant="body2">{telefono}</Typography>
+              <Typography variant="body2" color={telefono ? 'text.primary' : 'text.secondary'}>
+                {telefono ?? 'Sin teléfono'}
+              </Typography>
             </Box>
             <Typography variant="caption" color="text.secondary">
-              {!activo
-                ? 'Su acceso a la app está deshabilitado.'
-                : debeCambiarPassword
-                  ? 'Puede entrar con su email. Todavía no eligió su propia contraseña.'
-                  : 'Puede entrar a la app con su email.'}
+              {textoAcceso(cliente)}
             </Typography>
           </Stack>
           <Box
@@ -120,6 +136,18 @@ function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteC
             >
               Eliminar
             </Button>
+            {!tieneCuenta && (
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<KeyIcon />}
+                size="small"
+                onClick={() => onDarAcceso(cliente)}
+                sx={{ color: 'text.primary' }}
+              >
+                Dar acceso
+              </Button>
+            )}
           </Box>
         </AccordionDetails>
       </Accordion>

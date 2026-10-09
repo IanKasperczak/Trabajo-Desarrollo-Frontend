@@ -40,7 +40,7 @@ function Clientes() {
         (cliente) =>
           cliente.nombre.toLowerCase().includes(normalizedQuery) ||
           cliente.apellido.toLowerCase().includes(normalizedQuery) ||
-          cliente.email.toLowerCase().includes(normalizedQuery) ||
+          (cliente.email ?? '').toLowerCase().includes(normalizedQuery) ||
           String(cliente.dni).includes(normalizedQuery),
       )
     : clientes
@@ -68,9 +68,12 @@ function Clientes() {
           apellido: values.apellido,
           telefono: values.telefono,
           email: values.email,
-          activo: values.activo,
         }
-        if (values.password) cambios.password = values.password
+        // La cuenta solo se toca si existe
+        if (editing.tieneCuenta) {
+          cambios.activo = values.activo
+          if (values.password) cambios.password = values.password
+        }
         await clienteService.update(editing.dni, cambios)
         setSnackbar({ message: 'Cliente actualizado correctamente.', severity: 'success' })
       } else {
@@ -80,9 +83,12 @@ function Clientes() {
           apellido: values.apellido,
           telefono: values.telefono,
           email: values.email,
+          crearCuenta: values.crearCuenta,
         })
         setSnackbar({
-          message: 'Cliente creado. Ya puede entrar a la app con su email y su DNI como contraseña.',
+          message: values.crearCuenta
+            ? 'Cliente creado. Ya puede entrar a la app con su email y su DNI como contraseña.'
+            : 'Cliente creado correctamente.',
           severity: 'success',
         })
       }
@@ -91,6 +97,22 @@ function Clientes() {
     } catch (err) {
       setSnackbar({
         message: mensajeDeErrorApi(err, 'No se pudo guardar el cliente. Intentá nuevamente.'),
+        severity: 'error',
+      })
+    }
+  }
+
+  const handleDarAcceso = async (cliente: Cliente) => {
+    try {
+      await clienteService.crearCuenta(cliente.dni)
+      setSnackbar({
+        message: `${cliente.nombre} ya puede entrar a la app con su email y su DNI como contraseña.`,
+        severity: 'success',
+      })
+      await reload()
+    } catch (err) {
+      setSnackbar({
+        message: mensajeDeErrorApi(err, 'No se pudo dar acceso al cliente. Intentá nuevamente.'),
         severity: 'error',
       })
     }
@@ -174,7 +196,12 @@ function Clientes() {
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <ClienteList clientes={filtered} onEdit={handleOpenEdit} onDelete={setDeleting} />
+        <ClienteList
+          clientes={filtered}
+          onEdit={handleOpenEdit}
+          onDelete={setDeleting}
+          onDarAcceso={handleDarAcceso}
+        />
       )}
 
       <ClienteFormDialog
@@ -189,7 +216,7 @@ function Clientes() {
         title="Eliminar Cliente"
         message={
           deleting
-            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}? También se elimina su cuenta y ya no va a poder entrar a la app. Esta acción no se puede deshacer.`
+            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}?${deleting.tieneCuenta ? ' También se elimina su cuenta y ya no va a poder entrar a la app.' : ''} Esta acción no se puede deshacer.`
             : ''
         }
         onConfirm={handleConfirmDelete}
