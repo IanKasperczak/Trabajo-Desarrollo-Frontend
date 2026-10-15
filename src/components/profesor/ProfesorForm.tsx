@@ -6,10 +6,8 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
-  FormControlLabel,
   FormHelperText,
   Stack,
-  Switch,
   TextField,
 } from '@mui/material'
 import type { Especialidad } from '../../models/especialidad'
@@ -29,8 +27,6 @@ const emptyForm: ProfesorFormValues = {
   telefono: '',
   email: '',
   especialidades: [],
-  // Por defecto se le da acceso: casi todos los profesores usan la app
-  crearCuenta: true,
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -58,8 +54,6 @@ function ProfesorForm({
             (asignada) => asignada.idEspecialidad === especialidad.id,
           ),
         ),
-        // Al editar no se usa: el acceso se da con el botón "Dar acceso" de la tarjeta
-        crearCuenta: false,
       })
     } else {
       setForm(emptyForm)
@@ -77,7 +71,7 @@ function ProfesorForm({
   )
 
   const handleChange =
-    (field: keyof Omit<ProfesorFormValues, 'especialidades' | 'crearCuenta'>) =>
+    (field: keyof Omit<ProfesorFormValues, 'especialidades'>) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value =
         field === 'dni'
@@ -96,7 +90,6 @@ function ProfesorForm({
         telefono: form.telefono.trim(),
         email: form.email.trim(),
         especialidades: form.especialidades,
-        crearCuenta: form.crearCuenta,
       })
     } finally {
       setSubmitting(false)
@@ -176,26 +169,11 @@ function ProfesorForm({
             }
             fullWidth
           />
-          {!isEditing && (
-            <div>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={form.crearCuenta}
-                    onChange={(event) =>
-                      setForm((prev) => ({ ...prev, crearCuenta: event.target.checked }))
-                    }
-                  />
-                }
-                label="Darle acceso a la app"
-              />
-              <FormHelperText sx={{ mt: 0 }}>
-                {form.crearCuenta
-                  ? 'Va a poder entrar con su email y su DNI como contraseña, y después elegir la suya.'
-                  : 'Podés darle acceso más adelante desde su tarjeta.'}
-              </FormHelperText>
-            </div>
-          )}
+          <FormHelperText sx={{ mt: 0 }}>
+            {isEditing
+              ? 'Si cambiás el email, también cambia el usuario con el que entra a la app.'
+              : 'Se le crea la cuenta: va a entrar con su email y su DNI como contraseña, y después elige la suya.'}
+          </FormHelperText>
         </Stack>
       </DialogContent>
       <DialogActions>

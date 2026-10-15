@@ -15,7 +15,6 @@ import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import KeyIcon from '@mui/icons-material/Key'
 import type { Profesor } from '../../models/profesor'
 
 interface ProfesorCardProps {
@@ -24,7 +23,6 @@ interface ProfesorCardProps {
   onToggle: () => void
   onEdit: (profesor: Profesor) => void
   onDelete: (profesor: Profesor) => void
-  onDarAcceso: (profesor: Profesor) => void
 }
 
 function getInitials(nombre: string, apellido: string): string {
@@ -37,9 +35,8 @@ function ProfesorCard({
   onToggle,
   onEdit,
   onDelete,
-  onDarAcceso,
 }: ProfesorCardProps) {
-  const { dni, nombre, apellido, email, telefono, especialidades, tieneCuenta } = profesor
+  const { dni, nombre, apellido, email, telefono, especialidades } = profesor
 
   return (
     <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper' }}>
@@ -97,7 +94,6 @@ function ProfesorCard({
               <Typography variant="body2" color="text.secondary" noWrap>
                 DNI: {dni}
               </Typography>
-              {!tieneCuenta && <Chip label="Sin acceso" size="small" variant="outlined" />}
             </Stack>
           </Box>
         </AccordionSummary>
@@ -134,9 +130,7 @@ function ProfesorCard({
               </Stack>
             </Box>
             <Typography variant="caption" color="text.secondary">
-              {tieneCuenta
-                ? 'Puede entrar a la app con su email.'
-                : 'Todavía no tiene acceso a la app.'}
+              Puede entrar a la app con su email.
             </Typography>
           </Stack>
           <Box
@@ -165,18 +159,6 @@ function ProfesorCard({
             >
               Eliminar
             </Button>
-            {!tieneCuenta && (
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<KeyIcon />}
-                size="small"
-                onClick={() => onDarAcceso(profesor)}
-                sx={{ color: 'text.primary' }}
-              >
-                Dar acceso
-              </Button>
-            )}
           </Box>
         </AccordionDetails>
       </Accordion>

@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  Alert,
   Button,
   CircularProgress,
   DialogActions,
   DialogContent,
   Divider,
   FormControlLabel,
-  FormHelperText,
   Stack,
   Switch,
   TextField,
@@ -30,8 +28,6 @@ const emptyForm: ClienteFormValues = {
   email: '',
   password: '',
   activo: true,
-  // Por defecto se le da acceso: casi todos los clientes usan la app para reservar
-  crearCuenta: true,
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -52,24 +48,18 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
             nombre: cliente.nombre,
             apellido: cliente.apellido,
             telefono: cliente.telefono ?? '',
-            email: cliente.email ?? '',
+            email: cliente.email,
             password: '',
             activo: cliente.activo,
-            crearCuenta: false,
           }
         : emptyForm,
     )
   }, [cliente])
 
-  // Con cuenta (o si se la va a crear) el email es obligatorio: es su usuario para entrar
-  const conCuenta = isEditing ? cliente.tieneCuenta : form.crearCuenta
+  // El email es obligatorio: es el usuario con el que entra a la app
   const email = form.email.trim()
   const emailError =
-    email !== '' && !EMAIL_REGEX.test(email)
-      ? 'Email inválido'
-      : email === '' && conCuenta
-        ? 'Obligatorio para entrar a la app'
-        : null
+    email === '' ? null : !EMAIL_REGEX.test(email) ? 'Email inválido' : null
   const passwordError =
     form.password !== '' && form.password.length < PASSWORD_MIN
       ? `Mínimo ${PASSWORD_MIN} caracteres`
@@ -80,9 +70,10 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
       (isEditing || form.dni > 0) &&
       form.nombre.trim() !== '' &&
       form.apellido.trim() !== '' &&
+      email !== '' &&
       emailError === null &&
       passwordError === null,
-    [isEditing, form, emailError, passwordError],
+    [isEditing, form, email, emailError, passwordError],
   )
 
   const handleChange =
@@ -149,9 +140,9 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
             autoComplete="off"
             value={form.email}
             onChange={handleChange('email')}
-            error={emailError !== null && (email !== '' || conCuenta)}
-            helperText={emailError ?? (conCuenta ? 'Es el usuario con el que entra a la app' : ' ')}
-            required={conCuenta}
+            error={emailError !== null}
+            helperText={emailError ?? 'Es el usuario con el que entra a la app'}
+            required
             fullWidth
           />
 
@@ -161,34 +152,13 @@ function ClienteForm({ cliente, onCancel, onSubmit }: ClienteFormProps) {
           </Typography>
 
           {!isEditing && (
-            <div>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={form.crearCuenta}
-                    onChange={(event) =>
-                      setForm((prev) => ({ ...prev, crearCuenta: event.target.checked }))
-                    }
-                  />
-                }
-                label="Darle acceso a la app"
-              />
-              <FormHelperText sx={{ mt: 0 }}>
-                {form.crearCuenta
-                  ? 'Va a poder entrar con su email y su DNI como contraseña, y después elegir la suya desde Configuración.'
-                  : 'Podés darle acceso más adelante desde su tarjeta.'}
-              </FormHelperText>
-            </div>
+            <Typography variant="body2" color="text.secondary">
+              Se le crea la cuenta: va a entrar con su email y su DNI como contraseña, y después elige
+              la suya desde Configuración.
+            </Typography>
           )}
 
-          {isEditing && !cliente.tieneCuenta && (
-            <Alert severity="info">
-              Todavía no tiene acceso a la app. Podés dárselo con el botón <strong>Dar acceso</strong>{' '}
-              de su tarjeta.
-            </Alert>
-          )}
-
-          {isEditing && cliente.tieneCuenta && (
+          {isEditing && (
             <>
               <PasswordField
                 label="Nueva contraseña (opcional)"

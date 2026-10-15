@@ -90,14 +90,12 @@ function Profesores() {
         }
         setSnackbar({ message: 'Profesor actualizado correctamente.', severity: 'success' })
       } else {
-        const created = await profesorService.create({ ...data, crearCuenta: values.crearCuenta })
+        const created = await profesorService.create(data)
         for (const especialidad of values.especialidades) {
           await profesorService.assignEspecialidad(created.dni, especialidad.id)
         }
         setSnackbar({
-          message: values.crearCuenta
-            ? 'Profesor creado. Ya puede entrar a la app con su email y su DNI como contraseña.'
-            : 'Profesor creado correctamente.',
+          message: 'Profesor creado. Ya puede entrar a la app con su email y su DNI como contraseña.',
           severity: 'success',
         })
       }
@@ -107,22 +105,6 @@ function Profesores() {
     } catch (error) {
       setSnackbar({
         message: mensajeDeErrorApi(error, 'No se pudo guardar el profesor. Intentá nuevamente.'),
-        severity: 'error',
-      })
-    }
-  }
-
-  const handleDarAcceso = async (profesor: Profesor) => {
-    try {
-      await profesorService.crearCuenta(profesor.dni)
-      setSnackbar({
-        message: `${profesor.nombre} ya puede entrar a la app con su email y su DNI como contraseña.`,
-        severity: 'success',
-      })
-      await reload()
-    } catch (error) {
-      setSnackbar({
-        message: mensajeDeErrorApi(error, 'No se pudo dar acceso al profesor. Intentá nuevamente.'),
         severity: 'error',
       })
     }
@@ -212,12 +194,7 @@ function Profesores() {
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <ProfesorList
-          profesores={filtered}
-          onEdit={handleOpenEdit}
-          onDelete={setDeleting}
-          onDarAcceso={handleDarAcceso}
-        />
+        <ProfesorList profesores={filtered} onEdit={handleOpenEdit} onDelete={setDeleting} />
       )}
 
       <ProfesorFormDialog
@@ -236,7 +213,7 @@ function Profesores() {
         title="Eliminar Profesor"
         message={
           deleting
-            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}?${deleting.tieneCuenta ? ' También se elimina su cuenta y ya no va a poder entrar a la app.' : ''} Esta acción no se puede deshacer.`
+            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}? También se elimina su cuenta y ya no va a poder entrar a la app. Esta acción no se puede deshacer.`
             : ''
         }
         onConfirm={handleConfirmDelete}

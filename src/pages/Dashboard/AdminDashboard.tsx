@@ -72,9 +72,7 @@ function AdminDashboard() {
   const { clientes, profesores, especialidades, cuentas, rutinas } = data
   const clientesConRutina = new Set(rutinas.map((r) => r.dniCliente))
   const clientesSinRutina = clientes.filter((c) => !clientesConRutina.has(c.dni)).length
-  const clientesConAcceso = clientes.filter((c) => c.tieneCuenta && c.activo).length
-  const clientesSinCuenta = clientes.filter((c) => !c.tieneCuenta).length
-  const profesoresSinCuenta = profesores.filter((p) => !p.tieneCuenta).length
+  const clientesConAcceso = clientes.filter((c) => c.activo).length
   const cuentasPasswordInicial = cuentas.filter((c) => c.activo && c.debeCambiarPassword).length
   const cuentasDeshabilitadas = cuentas.filter((c) => !c.activo).length
   const administradores = cuentas.filter((c) => c.rol === 'administrador').length
@@ -89,20 +87,6 @@ function AdminDashboard() {
   const especialidadesSinProfesor = profesoresPorEspecialidad.filter((e) => e.value === 0).length
 
   const pendientes: AlertItem[] = []
-  if (clientesSinCuenta > 0) {
-    pendientes.push({
-      severity: 'warning',
-      title: `${plural(clientesSinCuenta, 'cliente', 'clientes')} sin acceso a la app`,
-      description: 'Les podés crear la cuenta desde Clientes.',
-    })
-  }
-  if (profesoresSinCuenta > 0) {
-    pendientes.push({
-      severity: 'warning',
-      title: `${plural(profesoresSinCuenta, 'profesor', 'profesores')} sin cuenta`,
-      description: 'Les podés crear la cuenta desde Profesores.',
-    })
-  }
   if (clientesSinRutina > 0) {
     pendientes.push({
       severity: 'info',
@@ -150,9 +134,6 @@ function AdminDashboard() {
             icon={SupervisorAccountIcon}
             label="Profesores"
             value={String(profesores.length)}
-            hint={
-              profesoresSinCuenta > 0 ? `${profesoresSinCuenta} sin cuenta` : 'Todos tienen cuenta'
-            }
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
