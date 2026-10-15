@@ -1,7 +1,7 @@
-import PageTitle from '../../../components/ui/PageTitle'
+import RutinasGestion from '../../../components/rutina/RutinasGestion'
 
 function MisRutinas() {
-  return <PageTitle title="Mis Rutinas" />
+  return <RutinasGestion modo="profesor" />
 }
 
 export default MisRutinas

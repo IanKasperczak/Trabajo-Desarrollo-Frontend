@@ -24,6 +24,7 @@ import ClienteMisRutinas from '../pages/Cliente/MisRutinas'
 import ClienteMiMembresia from '../pages/Cliente/MiMembresia'
 import ClienteMiPerfil from '../pages/Cliente/MiPerfil'
 import Configuracion from '../pages/Configuracion'
+import Usuarios from '../pages/Usuarios'
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomeRedirect /> },
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
       { path: 'rutinas', element: <Rutinas /> },
       { path: 'salones', element: <Salones /> },
       { path: 'especialidades', element: <Especialidades /> },
+      { path: 'usuarios', element: <Usuarios /> },
       { path: 'configuracion', element: <Configuracion /> },
     ],
   },

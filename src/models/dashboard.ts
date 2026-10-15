@@ -6,24 +6,7 @@ export interface AlertItem {
   severity: AlertSeverity
 }
 
-export interface KpiItem {
-  label: string
-  value: string
-  hint?: string
-}
-
 export interface BarDatum {
   label: string
   value: number
-}
-
-export interface GroupedBarSeries {
-  name: string
-  value: number
-  color: string
-}
-
-export interface GroupedBarDatum {
-  label: string
-  values: GroupedBarSeries[]
 }

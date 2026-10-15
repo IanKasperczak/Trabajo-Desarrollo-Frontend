@@ -1,176 +1,100 @@
-import { Box, Card, Grid, Typography } from '@mui/material'
-import EventIcon from '@mui/icons-material/Event'
-import GroupIcon from '@mui/icons-material/Group'
-import AccessTimeIcon from '@mui/icons-material/AccessTime'
-import GroupsIcon from '@mui/icons-material/Groups'
-import BadgeIcon from '@mui/icons-material/Badge'
+import { Box, Chip, Grid, Skeleton, Stack, Typography } from '@mui/material'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import SettingsIcon from '@mui/icons-material/Settings'
 import StatCard from '../../components/dashboard/common/StatCard'
 import SectionCard from '../../components/dashboard/common/SectionCard'
-import AlertList from '../../components/dashboard/common/AlertList'
 import AvisoPasswordInicial from '../../components/dashboard/common/AvisoPasswordInicial'
 import QuickActions from '../../components/dashboard/common/QuickActions'
 import type { QuickActionItem } from '../../components/dashboard/common/QuickActions'
-import {
-  nextClass,
-  profesorInfo,
-  profesorKpis,
-  profesorNotices,
-  todayClasses,
-  weeklySchedule,
-} from '../../mocks/mockProfesorDashboard'
-
-const kpiIcons = [EventIcon, GroupIcon, AccessTimeIcon]
+import ErrorState from '../../components/ui/ErrorState'
+import { useAsyncData } from '../../hooks/useAsyncData'
+import { useAuth } from '../../hooks/useAuth'
+import { profesorService } from '../../services/profesorService'
+import { rutinaService } from '../../services/rutinaService'
 
 const profesorQuickActions: QuickActionItem[] = [
-  { label: 'Ver alumnos', icon: GroupsIcon },
-  { label: 'Registrar asistencia', icon: BadgeIcon },
+  { label: 'Mis rutinas', icon: AssignmentIcon, to: '/profesor/mis-rutinas' },
+  { label: 'Mi perfil', icon: AccountCircleIcon, to: '/profesor/mi-perfil' },
+  { label: 'Configuración', icon: SettingsIcon, to: '/profesor/configuracion' },
 ]
 
 function ProfesorDashboard() {
+  const { usuario } = useAuth()
+  const dni = usuario?.dniProfesor ?? null
+  const { data, loading, error, reload } = useAsyncData(async () => {
+    if (dni === null) throw new Error('La cuenta no está vinculada a un profesor')
+    // El backend devuelve solo las rutinas de este profesor
+    const [profesor, rutinas] = await Promise.all([
+      profesorService.getByDni(dni),
+      rutinaService.getAll(),
+    ])
+    return { profesor, rutinas }
+  })
+
+  const profesor = data?.profesor
+  const rutinas = data?.rutinas ?? []
+  const clientesConRutina = new Set(rutinas.map((r) => r.dniCliente)).size
+
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h3" component="h1">
-          Hola, {profesorInfo.nombre} {profesorInfo.apellido}
+          {profesor ? `Hola, ${profesor.nombre}` : 'Hola'}
         </Typography>
-        <Box
-          sx={{
-            width: 56,
-            height: 4,
-            bgcolor: 'primary.main',
-            borderRadius: 2,
-            mt: 0.5,
-          }}
-        />
+        <Box sx={{ width: 56, height: 4, bgcolor: 'primary.main', borderRadius: 2, mt: 0.5 }} />
       </Box>
 
       <AvisoPasswordInicial />
 
-      <Card
-        variant="outlined"
-        sx={{
-          mb: 2,
-          p: 2,
-          bgcolor: 'background.paper',
-          borderLeft: 6,
-          borderColor: 'primary.main',
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 2,
-          }}
-        >
-          <Box>
-            <Typography variant="caption" color="text.secondary" component="div">
-              PRÓXIMA CLASE
-            </Typography>
-            <Typography variant="h4" component="div">
-              {nextClass.clase}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {nextClass.salon} · {nextClass.horario} · {nextClass.alumnos}{' '}
-              alumnos
-            </Typography>
-          </Box>
-        </Box>
-      </Card>
-
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        {profesorKpis.map((kpi, index) => (
-          <Grid item xs={12} sm={4} key={kpi.label}>
-            <StatCard icon={kpiIcons[index]} {...kpi} />
+      {!loading && error ? (
+        <ErrorState message="No se pudieron cargar tus datos." onRetry={reload} />
+      ) : (
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <StatCard
+              icon={AssignmentIcon}
+              label="Rutinas que cargaste"
+              value={loading ? '…' : String(rutinas.length)}
+              hint={
+                loading
+                  ? undefined
+                  : `Para ${clientesConRutina} ${clientesConRutina === 1 ? 'cliente' : 'clientes'}`
+              }
+            />
           </Grid>
-        ))}
-      </Grid>
-
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <SectionCard title="Clases del día">
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {todayClasses.map((clase) => (
-                <Box
-                  key={`${clase.hora}-${clase.clase}`}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    py: 1.25,
-                    '&:not(:last-of-type)': {
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                    },
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{ width: 56, fontWeight: 600 }}
-                  >
-                    {clase.hora}
-                  </Typography>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {clase.clase}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {clase.salon} · {clase.alumnos} alumnos
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          </SectionCard>
+          <Grid item xs={12} sm={6}>
+            <SectionCard title="Tus especialidades">
+              {loading || !profesor ? (
+                <Stack direction="row" spacing={0.75}>
+                  <Skeleton variant="rounded" width={90} height={32} />
+                  <Skeleton variant="rounded" width={110} height={32} />
+                </Stack>
+              ) : profesor.especialidades.length > 0 ? (
+                <Stack direction="row" spacing={0.75} useFlexGap flexWrap="wrap">
+                  {profesor.especialidades.map((esp) => (
+                    <Chip
+                      key={esp.idEspecialidad}
+                      label={esp.nombre}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  ))}
+                </Stack>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Todavía no tenés especialidades asignadas. Consultalo con el administrador.
+                </Typography>
+              )}
+            </SectionCard>
+          </Grid>
+          <Grid item xs={12}>
+            <SectionCard title="Accesos rápidos">
+              <QuickActions items={profesorQuickActions} />
+            </SectionCard>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <SectionCard title="Horario semanal">
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {weeklySchedule.map((dia) => (
-                <Box
-                  key={dia.dia}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 2,
-                    py: 1,
-                    '&:not(:last-of-type)': {
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                    },
-                  }}
-                >
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {dia.dia}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {dia.clase}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {dia.horario}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </SectionCard>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={2} sx={{ mt: 0.5 }}>
-        <Grid item xs={12} md={6}>
-          <SectionCard title="Avisos del gimnasio">
-            <AlertList items={profesorNotices} />
-          </SectionCard>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <SectionCard title="Acciones rápidas">
-            <QuickActions items={profesorQuickActions} />
-          </SectionCard>
-        </Grid>
-      </Grid>
+      )}
     </Box>
   )
 }
