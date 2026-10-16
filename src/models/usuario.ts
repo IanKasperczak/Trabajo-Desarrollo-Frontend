@@ -20,6 +20,30 @@ export interface Usuario {
   debeCambiarPassword: boolean
 }
 
+// Cuenta vista desde la gestión de usuarios (admin)
+export interface CuentaApi extends UsuarioApi {
+  activo: boolean
+  createdAt: string
+}
+
+export interface Cuenta extends Usuario {
+  // false: no puede iniciar sesión
+  activo: boolean
+  createdAt: string
+}
+
+// Desde Usuarios solo se crean administradores: profesores y clientes tienen su propia pantalla
+export interface NuevoAdminInput {
+  email: string
+  password: string
+}
+
+export interface CuentaUpdate {
+  activo?: boolean
+  // Contraseña nueva elegida por el admin: el usuario va a tener que cambiarla
+  password?: string
+}
+
 export interface LoginInput {
   email: string
   password: string

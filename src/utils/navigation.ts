@@ -11,6 +11,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import SettingsIcon from '@mui/icons-material/Settings'
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import type { SvgIconComponent } from '@mui/icons-material'
 import type { Role } from '../models/role'
 
@@ -37,6 +38,7 @@ export const roleNav: Record<Role, NavItem[]> = {
     { label: 'Rutinas', path: 'rutinas', icon: AssignmentIcon },
     { label: 'Salones', path: 'salones', icon: MeetingRoomIcon },
     { label: 'Especialidades', path: 'especialidades', icon: CategoryIcon },
+    { label: 'Usuarios', path: 'usuarios', icon: ManageAccountsIcon },
     { label: 'Configuración', path: 'configuracion', icon: SettingsIcon },
   ],
   profesor: [

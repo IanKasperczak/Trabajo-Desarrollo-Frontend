@@ -12,18 +12,11 @@ export interface Profesor {
   telefono: string
   email: string
   especialidades: ProfesorEspecialidad[]
-  // Si tiene cuenta para entrar a la app
-  tieneCuenta: boolean
 }
 
-export type ProfesorInput = Omit<Profesor, 'especialidades' | 'tieneCuenta'>
-
-// Al crear: con crearCuenta también se le crea la cuenta (contraseña inicial: su DNI)
-export interface ProfesorCreateInput extends ProfesorInput {
-  crearCuenta?: boolean
-}
+// Al crear un profesor se crea también su cuenta (contraseña inicial: su DNI)
+export type ProfesorInput = Omit<Profesor, 'especialidades'>
 
 export interface ProfesorFormValues extends ProfesorInput {
   especialidades: Especialidad[]
-  crearCuenta: boolean
 }

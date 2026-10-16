@@ -3,11 +3,10 @@ export interface Cliente {
   nombre: string
   apellido: string
   telefono: string | null
-  email: string | null
+  // También es el usuario con el que entra a la app
+  email: string
   estado: boolean
-  // Si tiene cuenta para entrar a la app (es opcional)
-  tieneCuenta: boolean
-  // Si puede entrar a la app (false si no tiene cuenta)
+  // Si puede entrar a la app
   activo: boolean
   // true mientras siga con la contraseña que le dio el admin (por defecto, su DNI)
   debeCambiarPassword: boolean
@@ -18,13 +17,12 @@ export interface ClienteInput {
   nombre: string
   apellido: string
   telefono?: string
-  // Obligatorio si se le crea la cuenta: es el usuario con el que entra
-  email?: string
-  // También le crea la cuenta; la contraseña inicial es el DNI
-  crearCuenta?: boolean
+  // Es el usuario con el que entra a la app. Al crear el cliente se crea también su cuenta
+  // (contraseña inicial: el DNI)
+  email: string
 }
 
-// El DNI no se puede modificar. activo y password solo aplican si tiene cuenta
+// El DNI no se puede modificar
 export interface ClienteUpdate {
   nombre?: string
   apellido?: string
@@ -44,5 +42,4 @@ export interface ClienteFormValues {
   // Al editar: vacía significa "no cambiarla"
   password: string
   activo: boolean
-  crearCuenta: boolean
 }

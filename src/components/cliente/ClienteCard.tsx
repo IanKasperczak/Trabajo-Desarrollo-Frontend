@@ -15,7 +15,6 @@ import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import KeyIcon from '@mui/icons-material/Key'
 import type { Cliente } from '../../models/cliente'
 
 interface ClienteCardProps {
@@ -24,31 +23,21 @@ interface ClienteCardProps {
   onToggle: () => void
   onEdit: (cliente: Cliente) => void
   onDelete: (cliente: Cliente) => void
-  onDarAcceso: (cliente: Cliente) => void
 }
 
 function getInitials(nombre: string, apellido: string): string {
   return `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
 }
 
-function textoAcceso({ tieneCuenta, activo, debeCambiarPassword }: Cliente): string {
-  if (!tieneCuenta) return 'Todavía no tiene acceso a la app.'
+function textoAcceso({ activo, debeCambiarPassword }: Cliente): string {
   if (!activo) return 'Su acceso a la app está deshabilitado.'
   if (debeCambiarPassword) return 'Puede entrar con su email. Todavía no eligió su propia contraseña.'
   return 'Puede entrar a la app con su email.'
 }
 
-function ClienteCard({
-  cliente,
-  expanded,
-  onToggle,
-  onEdit,
-  onDelete,
-  onDarAcceso,
-}: ClienteCardProps) {
-  const { dni, nombre, apellido, email, telefono, tieneCuenta, activo, debeCambiarPassword } =
-    cliente
-  const puedeEntrar = tieneCuenta && activo
+function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteCardProps) {
+  const { dni, nombre, apellido, email, telefono, activo, debeCambiarPassword } = cliente
+  const puedeEntrar = activo
 
   return (
     <Card
@@ -96,8 +85,8 @@ function ClienteCard({
           <Stack spacing={1.25} sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
               <EmailIcon fontSize="small" color="action" />
-              <Typography variant="body2" noWrap color={email ? 'text.primary' : 'text.secondary'}>
-                {email ?? 'Sin email'}
+              <Typography variant="body2" noWrap>
+                {email}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -136,18 +125,6 @@ function ClienteCard({
             >
               Eliminar
             </Button>
-            {!tieneCuenta && (
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<KeyIcon />}
-                size="small"
-                onClick={() => onDarAcceso(cliente)}
-                sx={{ color: 'text.primary' }}
-              >
-                Dar acceso
-              </Button>
-            )}
           </Box>
         </AccordionDetails>
       </Accordion>

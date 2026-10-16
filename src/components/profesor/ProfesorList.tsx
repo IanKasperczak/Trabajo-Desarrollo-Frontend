@@ -7,10 +7,9 @@ interface ProfesorListProps {
   profesores: Profesor[]
   onEdit: (profesor: Profesor) => void
   onDelete: (profesor: Profesor) => void
-  onDarAcceso: (profesor: Profesor) => void
 }
 
-function ProfesorList({ profesores, onEdit, onDelete, onDarAcceso }: ProfesorListProps) {
+function ProfesorList({ profesores, onEdit, onDelete }: ProfesorListProps) {
   const [expandedDni, setExpandedDni] = useState<number | null>(null)
 
   return (
@@ -27,7 +26,6 @@ function ProfesorList({ profesores, onEdit, onDelete, onDarAcceso }: ProfesorLis
             }
             onEdit={onEdit}
             onDelete={onDelete}
-            onDarAcceso={onDarAcceso}
           />
         </Grid>
       ))}

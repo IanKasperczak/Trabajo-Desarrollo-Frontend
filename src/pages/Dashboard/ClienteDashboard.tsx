@@ -1,232 +1,114 @@
-import { Box, Card, Chip, Grid, Typography } from '@mui/material'
-import EventAvailableIcon from '@mui/icons-material/EventAvailable'
-import CardMembershipIcon from '@mui/icons-material/CardMembership'
+import { Link as RouterLink } from 'react-router-dom'
+import { Box, Button, Chip, Grid, Skeleton, Stack, Typography } from '@mui/material'
 import AssignmentIcon from '@mui/icons-material/Assignment'
-import NewspaperIcon from '@mui/icons-material/Newspaper'
-import StarIcon from '@mui/icons-material/Star'
-import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import SettingsIcon from '@mui/icons-material/Settings'
 import SectionCard from '../../components/dashboard/common/SectionCard'
 import AvisoPasswordInicial from '../../components/dashboard/common/AvisoPasswordInicial'
 import QuickActions from '../../components/dashboard/common/QuickActions'
 import type { QuickActionItem } from '../../components/dashboard/common/QuickActions'
-import {
-  clienteInfo,
-  news,
-  nextReservedClass,
-  promos,
-  routine,
-} from '../../mocks/mockClienteDashboard'
+import { useAsyncData } from '../../hooks/useAsyncData'
+import { useAuth } from '../../hooks/useAuth'
+import { rutinaService } from '../../services/rutinaService'
+import { ordenDia } from '../../utils/dias'
 
 const clienteQuickActions: QuickActionItem[] = [
-  { label: 'Reservar clase', icon: EventAvailableIcon },
-  { label: 'Renovar membresía', icon: CardMembershipIcon },
-  { label: 'Ver rutina', icon: AssignmentIcon },
+  { label: 'Mis rutinas', icon: AssignmentIcon, to: '/cliente/mis-rutinas' },
+  { label: 'Configuración', icon: SettingsIcon, to: '/cliente/configuracion' },
 ]
 
+const MAX_RUTINAS_VISIBLES = 4
+
 function ClienteDashboard() {
-  const proximaAVencer = clienteInfo.diasRestantes <= 7
+  const { usuario } = useAuth()
+  // El backend devuelve solo las rutinas del cliente que inició sesión
+  const { data, loading, error } = useAsyncData(rutinaService.getAll)
+  const rutinas = [...(data ?? [])].sort((a, b) => ordenDia(a.diaSemana) - ordenDia(b.diaSemana))
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 3 }}>
         <Typography variant="h3" component="h1">
-          Hola, {clienteInfo.nombre}
+          Hola
         </Typography>
-        <Box
-          sx={{
-            width: 56,
-            height: 4,
-            bgcolor: 'primary.main',
-            borderRadius: 2,
-            mt: 0.5,
-          }}
-        />
+        <Box sx={{ width: 56, height: 4, bgcolor: 'primary.main', borderRadius: 2, mt: 0.5 }} />
       </Box>
 
       <AvisoPasswordInicial />
 
-      {proximaAVencer && (
-        <Card
-          variant="outlined"
-          sx={{
-            mb: 2,
-            p: 2,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            borderLeft: 6,
-            borderColor: 'warning.main',
-            bgcolor: 'background.paper',
-          }}
-        >
-          <WarningAmberIcon color="warning" />
-          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-            Tu membresía vence en {clienteInfo.diasRestantes} días. Renová antes
-            de la fecha para no perder acceso.
-          </Typography>
-        </Card>
-      )}
-
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <SectionCard title="Noticias">
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {news.map((item) => (
-                <Box
-                  key={item.title}
-                  sx={{
-                    display: 'flex',
-                    gap: 1.5,
-                    py: 1.25,
-                    '&:not(:last-of-type)': {
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                    },
-                  }}
-                >
-                  <NewspaperIcon
-                    fontSize="small"
-                    sx={{ color: 'primary.dark', mt: 0.25, flexShrink: 0 }}
-                  />
-                  <Box>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {item.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.description}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          </SectionCard>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
           <SectionCard
-            title="Próxima clase reservada"
+            title="Tus rutinas"
             action={
-              <Chip
-                label={nextReservedClass.fecha}
-                size="small"
-                color="primary"
-                variant="outlined"
-              />
+              rutinas.length > 0 ? (
+                <Button
+                  component={RouterLink}
+                  to="/cliente/mis-rutinas"
+                  size="small"
+                  sx={{ color: 'text.primary' }}
+                >
+                  Ver todas
+                </Button>
+              ) : undefined
             }
           >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Typography variant="h4" component="div">
-                {nextReservedClass.clase}
-              </Typography>
+            {loading && <Skeleton variant="text" width="70%" />}
+            {!loading && error && (
               <Typography variant="body2" color="text.secondary">
-                {nextReservedClass.horario}
+                No se pudieron cargar tus rutinas.
               </Typography>
+            )}
+            {!loading && !error && rutinas.length === 0 && (
               <Typography variant="body2" color="text.secondary">
-                {nextReservedClass.salon} · {nextReservedClass.profesor}
+                Todavía no tenés rutinas asignadas.
               </Typography>
-            </Box>
-          </SectionCard>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <SectionCard title="Estado de la membresía">
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 1,
-                }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Plan {clienteInfo.plan}
-                </Typography>
-                <Chip
-                  label="Activa"
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                />
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                Vence el {clienteInfo.vencimiento} ({clienteInfo.diasRestantes}{' '}
-                días restantes)
-              </Typography>
-            </Box>
-          </SectionCard>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <SectionCard title="Rutina asignada">
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {routine.map((dia) => (
-                <Box
-                  key={dia.dia}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    py: 1,
-                    '&:not(:last-of-type)': {
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                    },
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{ width: 80, fontWeight: 600 }}
+            )}
+            {!loading && !error && rutinas.length > 0 && (
+              <Stack>
+                {rutinas.slice(0, MAX_RUTINAS_VISIBLES).map((rutina) => (
+                  <Box
+                    key={rutina.idRutina}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 1,
+                      py: 1,
+                      '&:not(:last-of-type)': { borderBottom: '1px solid', borderColor: 'divider' },
+                    }}
                   >
-                    {dia.dia}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {dia.ejercicios}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </SectionCard>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <SectionCard title="Promociones">
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {promos.map((item) => (
-                <Box
-                  key={item.title}
-                  sx={{
-                    display: 'flex',
-                    gap: 1.5,
-                    py: 1.25,
-                    '&:not(:last-of-type)': {
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                    },
-                  }}
-                >
-                  <StarIcon
-                    fontSize="small"
-                    sx={{ color: 'primary.dark', mt: 0.25, flexShrink: 0 }}
-                  />
-                  <Box>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {item.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.description}
-                    </Typography>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                        {rutina.nombreRutina}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {rutina.ejercicios.length}{' '}
+                        {rutina.ejercicios.length === 1 ? 'ejercicio' : 'ejercicios'}
+                      </Typography>
+                    </Box>
+                    {rutina.diaSemana && (
+                      <Chip label={rutina.diaSemana} size="small" color="primary" variant="outlined" />
+                    )}
                   </Box>
-                </Box>
-              ))}
-            </Box>
+                ))}
+              </Stack>
+            )}
           </SectionCard>
         </Grid>
-
         <Grid item xs={12} md={6}>
-          <SectionCard title="Acciones rápidas">
-            <QuickActions items={clienteQuickActions} />
-          </SectionCard>
+          <Stack spacing={2}>
+            <SectionCard title="Tu cuenta" sx={{ height: 'auto' }}>
+              <Typography variant="body2" color="text.secondary">
+                Iniciaste sesión como
+              </Typography>
+              <Typography variant="body1" sx={{ wordBreak: 'break-all' }}>
+                {usuario?.email}
+              </Typography>
+            </SectionCard>
+            <SectionCard title="Accesos rápidos" sx={{ height: 'auto' }}>
+              <QuickActions items={clienteQuickActions} />
+            </SectionCard>
+          </Stack>
         </Grid>
       </Grid>
     </Box>

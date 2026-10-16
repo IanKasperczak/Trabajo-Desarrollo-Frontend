@@ -7,10 +7,9 @@ interface ClienteListProps {
   clientes: Cliente[]
   onEdit: (cliente: Cliente) => void
   onDelete: (cliente: Cliente) => void
-  onDarAcceso: (cliente: Cliente) => void
 }
 
-function ClienteList({ clientes, onEdit, onDelete, onDarAcceso }: ClienteListProps) {
+function ClienteList({ clientes, onEdit, onDelete }: ClienteListProps) {
   const [expandedDni, setExpandedDni] = useState<number | null>(null)
 
   return (
@@ -25,7 +24,6 @@ function ClienteList({ clientes, onEdit, onDelete, onDarAcceso }: ClienteListPro
             }
             onEdit={onEdit}
             onDelete={onDelete}
-            onDarAcceso={onDarAcceso}
           />
         </Grid>
       ))}

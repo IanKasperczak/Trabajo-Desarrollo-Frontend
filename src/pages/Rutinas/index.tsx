@@ -1,7 +1,7 @@
-import PageTitle from '../../components/ui/PageTitle'
+import RutinasGestion from '../../components/rutina/RutinasGestion'
 
 function Rutinas() {
-  return <PageTitle title="Rutinas" />
+  return <RutinasGestion modo="admin" />
 }
 
 export default Rutinas

@@ -1,18 +1,6 @@
 import api from '../api/api'
-import type { Role } from '../models/role'
-import type {
-  CambiarPasswordInput,
-  LoginInput,
-  RolApi,
-  Usuario,
-  UsuarioApi,
-} from '../models/usuario'
-
-const rolDesdeApi: Record<RolApi, Role> = {
-  admin: 'administrador',
-  profesor: 'profesor',
-  cliente: 'cliente',
-}
+import type { CambiarPasswordInput, LoginInput, Usuario, UsuarioApi } from '../models/usuario'
+import { rolDesdeApi } from '../utils/roles'
 
 const toUsuario = (usuario: UsuarioApi): Usuario => ({
   ...usuario,
