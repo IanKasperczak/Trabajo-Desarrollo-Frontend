@@ -9,7 +9,6 @@ import ClienteDashboard from '../pages/Dashboard/ClienteDashboard'
 import Clientes from '../pages/Clientes'
 import Profesores from '../pages/Profesores'
 import Especialidades from '../pages/Especialidades'
-import Salones from '../pages/Salones'
 import Clases from '../pages/Clases'
 import Turnos from '../pages/Turnos'
 import Membresias from '../pages/Membresias'
@@ -44,7 +43,6 @@ export const router = createBrowserRouter([
       { path: 'turnos', element: <Turnos /> },
       { path: 'membresias', element: <Membresias /> },
       { path: 'rutinas', element: <Rutinas /> },
-      { path: 'salones', element: <Salones /> },
       { path: 'especialidades', element: <Especialidades /> },
       { path: 'usuarios', element: <Usuarios /> },
       { path: 'configuracion', element: <Configuracion /> },
