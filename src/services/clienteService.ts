@@ -2,6 +2,16 @@ import api from '../api/api'
 import type { Cliente, ClienteInput, ClienteUpdate } from '../models/cliente'
 
 export const clienteService = {
+  // Datos del cliente que inició sesión (el resto de los endpoints son para admin y profesor)
+  getMiPerfil: async (): Promise<Cliente> => {
+    const response = await api.get<Cliente>('/clientes/me')
+    return response.data
+  },
+  // El cliente solo puede cambiar su teléfono; vacío lo borra
+  updateMiPerfil: async (telefono: string): Promise<Cliente> => {
+    const response = await api.put<Cliente>('/clientes/me', { telefono })
+    return response.data
+  },
   getAll: async (): Promise<Cliente[]> => {
     const response = await api.get<Cliente[]>('/clientes')
     return response.data

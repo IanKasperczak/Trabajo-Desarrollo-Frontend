@@ -1,5 +1,6 @@
 import { Link as RouterLink } from 'react-router-dom'
 import { Box, Button, Chip, Grid, Skeleton, Stack, Typography } from '@mui/material'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import SettingsIcon from '@mui/icons-material/Settings'
 import SectionCard from '../../components/dashboard/common/SectionCard'
@@ -8,11 +9,13 @@ import QuickActions from '../../components/dashboard/common/QuickActions'
 import type { QuickActionItem } from '../../components/dashboard/common/QuickActions'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { useAuth } from '../../hooks/useAuth'
+import { clienteService } from '../../services/clienteService'
 import { rutinaService } from '../../services/rutinaService'
 import { ordenDia } from '../../utils/dias'
 
 const clienteQuickActions: QuickActionItem[] = [
   { label: 'Mis rutinas', icon: AssignmentIcon, to: '/cliente/mis-rutinas' },
+  { label: 'Mi perfil', icon: AccountCircleIcon, to: '/cliente/mi-perfil' },
   { label: 'Configuración', icon: SettingsIcon, to: '/cliente/configuracion' },
 ]
 
@@ -22,13 +25,15 @@ function ClienteDashboard() {
   const { usuario } = useAuth()
   // El backend devuelve solo las rutinas del cliente que inició sesión
   const { data, loading, error } = useAsyncData(rutinaService.getAll)
+  // Si falla, el saludo queda genérico: no vale la pena un error aparte
+  const { data: perfil } = useAsyncData(clienteService.getMiPerfil)
   const rutinas = [...(data ?? [])].sort((a, b) => ordenDia(a.diaSemana) - ordenDia(b.diaSemana))
 
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h3" component="h1">
-          Hola
+          {perfil ? `Hola, ${perfil.nombre}` : 'Hola'}
         </Typography>
         <Box sx={{ width: 56, height: 4, bgcolor: 'primary.main', borderRadius: 2, mt: 0.5 }} />
       </Box>
