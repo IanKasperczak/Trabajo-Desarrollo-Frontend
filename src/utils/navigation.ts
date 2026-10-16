@@ -5,7 +5,6 @@ import EventIcon from '@mui/icons-material/Event'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import CardMembershipIcon from '@mui/icons-material/CardMembership'
 import AssignmentIcon from '@mui/icons-material/Assignment'
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom'
 import CategoryIcon from '@mui/icons-material/Category'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
@@ -36,7 +35,6 @@ export const roleNav: Record<Role, NavItem[]> = {
     { label: 'Turnos', path: 'turnos', icon: ScheduleIcon },
     { label: 'Membresías', path: 'membresias', icon: CardMembershipIcon },
     { label: 'Rutinas', path: 'rutinas', icon: AssignmentIcon },
-    { label: 'Salones', path: 'salones', icon: MeetingRoomIcon },
     { label: 'Especialidades', path: 'especialidades', icon: CategoryIcon },
     { label: 'Usuarios', path: 'usuarios', icon: ManageAccountsIcon },
     { label: 'Configuración', path: 'configuracion', icon: SettingsIcon },
