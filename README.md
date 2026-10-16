@@ -9,6 +9,10 @@ Desarrollar en grupo una aplicación web full stack en base a un alcance propues
 
 Durante dicho desarrollo se deberá aplicar todo lo aprendido en la materia Desarrollo de Software.
 
+## Documentación del proyecto
+
+Instalación, tests y estructura del frontend en [`docs/`](docs/README.md). La documentación completa del proyecto está en el [repo del backend](https://github.com/Campesianoo/Trabajo-Desarrollo/blob/main/docs/README.md).
+
 ## 2. Tema y Alcance
 El grupo debe deberá proponer a los docentes un tema para el trabajo práctico de su preferencia utilizando la [plantilla de propuesta](proposal.md)
 
