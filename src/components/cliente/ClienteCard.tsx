@@ -15,12 +15,15 @@ import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import type { Cliente } from '../../models/cliente'
+import { colorEstado, formatearFecha } from '../../utils/membresia'
 
 interface ClienteCardProps {
   cliente: Cliente
   expanded: boolean
   onToggle: () => void
+  onDetail: (cliente: Cliente) => void
   onEdit: (cliente: Cliente) => void
   onDelete: (cliente: Cliente) => void
 }
@@ -35,8 +38,8 @@ function textoAcceso({ activo, debeCambiarPassword }: Cliente): string {
   return 'Puede entrar a la app con su email.'
 }
 
-function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteCardProps) {
-  const { dni, nombre, apellido, email, telefono, activo, debeCambiarPassword } = cliente
+function ClienteCard({ cliente, expanded, onToggle, onDetail, onEdit, onDelete }: ClienteCardProps) {
+  const { dni, nombre, apellido, email, telefono, activo, debeCambiarPassword, membresia } = cliente
   const puedeEntrar = activo
 
   return (
@@ -79,6 +82,21 @@ function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteC
                 <Chip label="Contraseña inicial" size="small" color="warning" variant="outlined" />
               )}
             </Stack>
+            {membresia !== undefined && (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Chip
+                  label={membresia ? membresia.estado : 'Sin membresía'}
+                  size="small"
+                  color={membresia ? colorEstado[membresia.estado] : 'default'}
+                  variant={membresia ? 'filled' : 'outlined'}
+                />
+                {membresia && (
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    Vence {formatearFecha(membresia.fechaVencimiento)}
+                  </Typography>
+                )}
+              </Stack>
+            )}
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2, pb: 2, pt: 0 }}>
@@ -107,6 +125,14 @@ function ClienteCard({ cliente, expanded, onToggle, onEdit, onDelete }: ClienteC
               '& > *': { flex: '1 1 auto' },
             }}
           >
+            <Button
+              variant="outlined"
+              startIcon={<VisibilityIcon />}
+              size="small"
+              onClick={() => onDetail(cliente)}
+            >
+              Ver detalle
+            </Button>
             <Button
               variant="contained"
               color="primary"

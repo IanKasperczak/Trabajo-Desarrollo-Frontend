@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   InputAdornment,
+  MenuItem,
   Snackbar,
   Stack,
   TextField,
@@ -13,6 +14,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import AddIcon from '@mui/icons-material/Add'
 import ClienteList from '../../components/cliente/ClienteList'
 import ClienteFormDialog from '../../components/cliente/ClienteFormDialog'
+import ClienteDetalleDialog from '../../components/cliente/ClienteDetalleDialog'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import ErrorState from '../../components/ui/ErrorState'
 import EmptyState from '../../components/ui/EmptyState'
@@ -20,7 +22,10 @@ import ListSkeleton from '../../components/ui/ListSkeleton'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { clienteService } from '../../services/clienteService'
 import { mensajeDeErrorApi } from '../../utils/apiError'
+import { ESTADOS } from '../../utils/membresia'
 import type { Cliente, ClienteFormValues, ClienteUpdate } from '../../models/cliente'
+
+const SIN_MEMBRESIA = 'Sin membresía'
 
 type SnackbarState = { message: string; severity: 'success' | 'error' } | null
 
@@ -28,6 +33,8 @@ function Clientes() {
   const { data, loading, error, reload } = useAsyncData(clienteService.getAll)
 
   const [query, setQuery] = useState('')
+  const [estadoFiltro, setEstadoFiltro] = useState('')
+  const [viendo, setViendo] = useState<Cliente | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Cliente | null>(null)
   const [deleting, setDeleting] = useState<Cliente | null>(null)
@@ -35,15 +42,20 @@ function Clientes() {
 
   const clientes = data ?? []
   const normalizedQuery = query.trim().toLowerCase()
-  const filtered = normalizedQuery
-    ? clientes.filter(
-        (cliente) =>
-          cliente.nombre.toLowerCase().includes(normalizedQuery) ||
-          cliente.apellido.toLowerCase().includes(normalizedQuery) ||
-          (cliente.email ?? '').toLowerCase().includes(normalizedQuery) ||
-          String(cliente.dni).includes(normalizedQuery),
-      )
-    : clientes
+  // Solo el admin recibe las membresías: al profesor no se le muestra el filtro
+  const hayMembresias = clientes.some((cliente) => cliente.membresia !== undefined)
+  const coincideBusqueda = (cliente: Cliente) =>
+    !normalizedQuery ||
+    cliente.nombre.toLowerCase().includes(normalizedQuery) ||
+    cliente.apellido.toLowerCase().includes(normalizedQuery) ||
+    (cliente.email ?? '').toLowerCase().includes(normalizedQuery) ||
+    String(cliente.dni).includes(normalizedQuery)
+  const coincideEstado = (cliente: Cliente) =>
+    !estadoFiltro ||
+    (estadoFiltro === SIN_MEMBRESIA
+      ? cliente.membresia === null
+      : cliente.membresia?.estado === estadoFiltro)
+  const filtered = clientes.filter((cliente) => coincideBusqueda(cliente) && coincideEstado(cliente))
 
   const handleOpenCreate = () => {
     setEditing(null)
@@ -149,6 +161,23 @@ function Clientes() {
             }}
             sx={{ width: { xs: '100%', sm: 300 } }}
           />
+          {hayMembresias && (
+            <TextField
+              select
+              size="small"
+              label="Membresía"
+              value={estadoFiltro}
+              onChange={(event) => setEstadoFiltro(event.target.value)}
+              sx={{ width: { xs: '100%', sm: 170 } }}
+            >
+              <MenuItem value="">Todas</MenuItem>
+              {[...ESTADOS, SIN_MEMBRESIA].map((estado) => (
+                <MenuItem key={estado} value={estado}>
+                  {estado}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
           <Button
             variant="contained"
             color="primary"
@@ -174,7 +203,12 @@ function Clientes() {
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <ClienteList clientes={filtered} onEdit={handleOpenEdit} onDelete={setDeleting} />
+        <ClienteList
+          clientes={filtered}
+          onDetail={setViendo}
+          onEdit={handleOpenEdit}
+          onDelete={setDeleting}
+        />
       )}
 
       <ClienteFormDialog
@@ -183,6 +217,8 @@ function Clientes() {
         onClose={handleClose}
         onSubmit={handleSubmit}
       />
+
+      <ClienteDetalleDialog cliente={viendo} onClose={() => setViendo(null)} />
 
       <ConfirmDialog
         open={deleting !== null}

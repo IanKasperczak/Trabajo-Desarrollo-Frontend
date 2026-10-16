@@ -1,3 +1,12 @@
+import type { EstadoMembresia } from './membresia'
+
+// La membresía en curso (o la próxima, o la última vencida) del cliente
+export interface MembresiaResumen {
+  fechaInicio: string
+  fechaVencimiento: string
+  estado: EstadoMembresia
+}
+
 export interface Cliente {
   dni: number
   nombre: string
@@ -10,6 +19,8 @@ export interface Cliente {
   activo: boolean
   // true mientras siga con la contraseña que le dio el admin (por defecto, su DNI)
   debeCambiarPassword: boolean
+  // Solo la recibe el admin (null si nunca tuvo); el profesor no ve las membresías
+  membresia?: MembresiaResumen | null
 }
 
 export interface ClienteInput {
