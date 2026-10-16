@@ -4,6 +4,7 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import CategoryIcon from '@mui/icons-material/Category'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import AssignmentIcon from '@mui/icons-material/Assignment'
+import CardMembershipIcon from '@mui/icons-material/CardMembership'
 import StatCard from '../../components/dashboard/common/StatCard'
 import SectionCard from '../../components/dashboard/common/SectionCard'
 import RankingList from '../../components/dashboard/common/RankingList'
@@ -19,25 +20,28 @@ import { profesorService } from '../../services/profesorService'
 import { especialidadService } from '../../services/especialidadService'
 import { usuarioService } from '../../services/usuarioService'
 import { rutinaService } from '../../services/rutinaService'
+import { membresiaService } from '../../services/membresiaService'
 import type { AlertItem } from '../../models/dashboard'
 
 const adminQuickActions: QuickActionItem[] = [
   { label: 'Clientes', icon: PersonIcon, to: '/admin/clientes' },
   { label: 'Profesores', icon: SupervisorAccountIcon, to: '/admin/profesores' },
   { label: 'Rutinas', icon: AssignmentIcon, to: '/admin/rutinas' },
+  { label: 'Membresías', icon: CardMembershipIcon, to: '/admin/membresias' },
   { label: 'Especialidades', icon: CategoryIcon, to: '/admin/especialidades' },
   { label: 'Usuarios', icon: ManageAccountsIcon, to: '/admin/usuarios' },
 ]
 
 const cargarResumen = async () => {
-  const [clientes, profesores, especialidades, cuentas, rutinas] = await Promise.all([
+  const [clientes, profesores, especialidades, cuentas, rutinas, membresias] = await Promise.all([
     clienteService.getAll(),
     profesorService.getAll(),
     especialidadService.getAll(),
     usuarioService.getAll(),
     rutinaService.getAll(),
+    membresiaService.getAll(),
   ])
-  return { clientes, profesores, especialidades, cuentas, rutinas }
+  return { clientes, profesores, especialidades, cuentas, rutinas, membresias }
 }
 
 const plural = (n: number, singular: string, pluralForm: string) =>
@@ -69,7 +73,12 @@ function AdminDashboard() {
     )
   }
 
-  const { clientes, profesores, especialidades, cuentas, rutinas } = data
+  const { clientes, profesores, especialidades, cuentas, rutinas, membresias } = data
+  const membresiasPorVencer = membresias.filter((m) => m.estado === 'Por vencer').length
+  const clientesConMembresia = new Set(
+    membresias.filter((m) => m.estado !== 'Vencida').map((m) => m.dniCliente),
+  )
+  const clientesSinMembresia = clientes.filter((c) => !clientesConMembresia.has(c.dni)).length
   const clientesConRutina = new Set(rutinas.map((r) => r.dniCliente))
   const clientesSinRutina = clientes.filter((c) => !clientesConRutina.has(c.dni)).length
   const clientesConAcceso = clientes.filter((c) => c.activo).length
@@ -92,6 +101,20 @@ function AdminDashboard() {
       severity: 'info',
       title: `${plural(clientesSinRutina, 'cliente', 'clientes')} sin rutina asignada`,
       description: 'Se cargan desde Rutinas.',
+    })
+  }
+  if (clientesSinMembresia > 0) {
+    pendientes.push({
+      severity: 'warning',
+      title: `${plural(clientesSinMembresia, 'cliente', 'clientes')} sin membresía vigente`,
+      description: 'Se registran desde Membresías.',
+    })
+  }
+  if (membresiasPorVencer > 0) {
+    pendientes.push({
+      severity: 'info',
+      title: `${plural(membresiasPorVencer, 'membresía', 'membresías')} por vencer`,
+      description: 'Vencen en los próximos 7 días.',
     })
   }
   if (cuentasPasswordInicial > 0) {

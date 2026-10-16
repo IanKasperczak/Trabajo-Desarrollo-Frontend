@@ -189,7 +189,7 @@ function Clientes() {
         title="Eliminar Cliente"
         message={
           deleting
-            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}? También se elimina su cuenta y ya no va a poder entrar a la app. Esta acción no se puede deshacer.`
+            ? `¿Estás seguro de que querés eliminar a ${deleting.nombre} ${deleting.apellido}? Se eliminan también sus membresías, sus rutinas y su cuenta (ya no va a poder entrar a la app). Esta acción no se puede deshacer.`
             : ''
         }
         onConfirm={handleConfirmDelete}
