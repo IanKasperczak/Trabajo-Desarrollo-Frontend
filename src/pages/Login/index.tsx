@@ -21,6 +21,7 @@ import { useAuth } from '../../hooks/useAuth'
 import FullPageLoader from '../../components/auth/FullPageLoader'
 import type { Usuario } from '../../models/usuario'
 import { roleBase } from '../../utils/navigation'
+import { easeOut } from '../../styles/theme'
 
 const mensajeDeError = (error: unknown) => {
   if (isAxiosError(error)) {
@@ -83,13 +84,22 @@ function Login() {
         justifyContent: 'center',
         px: 2,
         py: 4,
-        bgcolor: '#212121',
+        bgcolor: '#1C1B17',
+        backgroundImage:
+          'radial-gradient(900px 480px at 50% -8%, rgba(255, 193, 7, 0.12), transparent 70%)',
       }}
     >
       <Paper
         component="main"
         elevation={0}
-        sx={{ width: '100%', maxWidth: 400, p: { xs: 3, sm: 4 }, borderRadius: 3 }}
+        sx={{
+          width: '100%',
+          maxWidth: 400,
+          p: { xs: 3, sm: 4 },
+          borderRadius: 4,
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2), 0 28px 60px -16px rgba(0, 0, 0, 0.6)',
+          animation: `page-enter 320ms ${easeOut} both`,
+        }}
       >
         <Stack spacing={1} alignItems="center" sx={{ mb: 3 }}>
           <FitnessCenterIcon sx={{ fontSize: 40, color: 'primary.main' }} />

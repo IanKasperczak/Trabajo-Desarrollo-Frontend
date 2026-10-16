@@ -20,6 +20,7 @@ import type { Theme } from '@mui/material'
 import type { Role } from '../../models/role'
 import { roleBase, roleNav } from '../../utils/navigation'
 import UserMenu from '../auth/UserMenu'
+import { easeOut } from '../../styles/theme'
 
 const DRAWER_WIDTH = 240
 const APP_NAME = 'Gimnasio Power Trainer'
@@ -60,8 +61,13 @@ function MainLayout({ role }: MainLayoutProps) {
                 selected={isActive}
                 sx={{
                   position: 'relative',
-                  pl: 2.5,
+                  mx: 1.5,
+                  my: 0.25,
+                  pl: 1.5,
+                  borderRadius: 2,
                   color: 'rgba(255, 255, 255, 0.75)',
+                  transition: `background-color 160ms ease, color 160ms ease, transform 160ms ${easeOut}`,
+                  '&:active': { transform: 'scale(0.98)' },
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.06)',
                     color: '#FFFFFF',
@@ -82,13 +88,13 @@ function MainLayout({ role }: MainLayoutProps) {
                   '&.Mui-selected::before': {
                     content: '""',
                     position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
+                    left: -12,
+                    top: 8,
+                    bottom: 8,
                     width: 4,
                     backgroundColor: '#FFC107',
-                    borderTopRightRadius: 2,
-                    borderBottomRightRadius: 2,
+                    borderTopRightRadius: 3,
+                    borderBottomRightRadius: 3,
                   },
                 }}
               >
@@ -182,11 +188,22 @@ function MainLayout({ role }: MainLayoutProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 3 },
+          minWidth: 0,
+          p: { xs: 2, sm: 3, lg: 4 },
           mt: 8,
         }}
       >
-        <Outlet />
+        {/* key: cada pantalla entra con un fundido corto; la barra lateral no se mueve */}
+        <Box
+          key={location.pathname}
+          sx={{
+            maxWidth: 1400,
+            mx: 'auto',
+            animation: `page-enter 240ms ${easeOut} both`,
+          }}
+        >
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   )

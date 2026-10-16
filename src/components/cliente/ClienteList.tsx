@@ -14,9 +14,9 @@ function ClienteList({ clientes, onDetail, onEdit, onDelete }: ClienteListProps)
   const [expandedDni, setExpandedDni] = useState<number | null>(null)
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{ alignItems: 'flex-start' }}>
       {clientes.map((cliente) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={cliente.dni}>
+        <Grid item xs={12} md={6} xl={4} key={cliente.dni}>
           <ClienteCard
             cliente={cliente}
             expanded={expandedDni === cliente.dni}

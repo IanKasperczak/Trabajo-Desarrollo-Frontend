@@ -44,7 +44,8 @@ function MembresiaCard({ membresia, mostrarCliente = false, onEdit, onDelete }: 
   const plazo = textoPlazo(membresia)
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper', p: 2 }}>
+    <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper', p: 2, display: 'flex', flexDirection: 'column' }}
+    >
       <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="flex-start">
         <Box sx={{ minWidth: 0 }}>
           {mostrarCliente && (
@@ -86,7 +87,7 @@ function MembresiaCard({ membresia, mostrarCliente = false, onEdit, onDelete }: 
       )}
 
       {(onEdit || onDelete) && (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 2, '& > *': { flex: '1 1 auto' } }}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 'auto', pt: 2, '& > *': { flex: '1 1 auto' } }}>
           {onEdit && (
             <Button
               variant="contained"

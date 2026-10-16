@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import type { Cliente } from '../../models/cliente'
 import { colorEstado, formatearFecha } from '../../utils/membresia'
+import { easeOut } from '../../styles/theme'
 
 interface ClienteCardProps {
   cliente: Cliente
@@ -45,7 +46,14 @@ function ClienteCard({ cliente, expanded, onToggle, onDetail, onEdit, onDelete }
   return (
     <Card
       variant="outlined"
-      sx={{ height: '100%', bgcolor: 'background.paper', opacity: puedeEntrar ? 1 : 0.85 }}
+      sx={{
+        bgcolor: 'background.paper',
+        opacity: puedeEntrar ? 1 : 0.85,
+        transition: `box-shadow 200ms ${easeOut}, border-color 200ms ease`,
+        '@media (hover: hover) and (pointer: fine)': {
+          '&:hover': { boxShadow: 'var(--sombra-tarjeta-hover)', borderColor: 'var(--borde-hover)' },
+        },
+      }}
     >
       <Accordion
         expanded={expanded}
@@ -61,11 +69,11 @@ function ClienteCard({ cliente, expanded, onToggle, onDetail, onEdit, onDelete }
           expandIcon={<ExpandMoreIcon color="primary" />}
           aria-controls={`cliente-${dni}-content`}
           id={`cliente-${dni}-header`}
-          sx={{ px: 2, py: 1.5 }}
+          sx={{ px: 2, py: 1.75, '& .MuiAccordionSummary-content': { minWidth: 0, my: 0 } }}
         >
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
-              <Avatar sx={{ bgcolor: 'primary.main', color: 'text.primary' }}>
+              <Avatar sx={{ bgcolor: 'primary.main', color: 'text.primary', fontWeight: 700, flexShrink: 0 }}>
                 {getInitials(nombre, apellido)}
               </Avatar>
               {/* span: el Accordion ya envuelve el resumen en un <h3> */}
@@ -73,8 +81,8 @@ function ClienteCard({ cliente, expanded, onToggle, onDetail, onEdit, onDelete }
                 {nombre} {apellido}
               </Typography>
             </Box>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography variant="body2" color="text.secondary" noWrap>
+            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+              <Typography variant="body2" color="text.secondary" noWrap data-tabular>
                 DNI: {dni}
               </Typography>
               {!puedeEntrar && <Chip label="Sin acceso" size="small" variant="outlined" />}
@@ -83,7 +91,7 @@ function ClienteCard({ cliente, expanded, onToggle, onDetail, onEdit, onDelete }
               )}
             </Stack>
             {membresia !== undefined && (
-              <Stack direction="row" spacing={1} alignItems="center">
+              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
                 <Chip
                   label={membresia ? membresia.estado : 'Sin membresía'}
                   size="small"

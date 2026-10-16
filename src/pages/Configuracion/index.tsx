@@ -1,8 +1,13 @@
 import { useState } from 'react'
-import { Alert, Box, Snackbar, Stack, Typography } from '@mui/material'
+import { Alert, Box, Snackbar, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import SectionCard from '../../components/dashboard/common/SectionCard'
 import CambiarPasswordForm from '../../components/auth/CambiarPasswordForm'
 import { useAuth } from '../../hooks/useAuth'
+import { useColorMode } from '../../hooks/useColorMode'
+import type { PreferenciaTema } from '../../context/ColorModeContext'
 import { roles } from '../../models/role'
 import type { CambiarPasswordInput } from '../../models/usuario'
 import { mensajeDeErrorApi } from '../../utils/apiError'
@@ -12,6 +17,7 @@ type SnackbarState = { message: string; severity: 'success' | 'error' } | null
 // Pantalla común a los tres roles
 function Configuracion() {
   const { usuario, cambiarPassword } = useAuth()
+  const { preferencia, setPreferencia } = useColorMode()
   const [snackbar, setSnackbar] = useState<SnackbarState>(null)
 
   if (!usuario) return null
@@ -52,6 +58,37 @@ function Configuracion() {
               Rol
             </Typography>
             <Typography variant="body1">{rolLabel}</Typography>
+          </Stack>
+        </SectionCard>
+
+        <SectionCard title="Apariencia">
+          <Stack spacing={1.5}>
+            <Typography variant="body2" color="text.secondary">
+              Elegí cómo querés ver la app. Se guarda en este navegador.
+            </Typography>
+            <ToggleButtonGroup
+              exclusive
+              fullWidth
+              size="small"
+              value={preferencia}
+              onChange={(_, nueva: PreferenciaTema | null) => {
+                if (nueva) setPreferencia(nueva)
+              }}
+              aria-label="Tema de la aplicación"
+            >
+              <ToggleButton value="claro" sx={{ gap: 1 }}>
+                <LightModeIcon fontSize="small" />
+                Claro
+              </ToggleButton>
+              <ToggleButton value="oscuro" sx={{ gap: 1 }}>
+                <DarkModeIcon fontSize="small" />
+                Oscuro
+              </ToggleButton>
+              <ToggleButton value="sistema" sx={{ gap: 1 }}>
+                <SettingsBrightnessIcon fontSize="small" />
+                Sistema
+              </ToggleButton>
+            </ToggleButtonGroup>
           </Stack>
         </SectionCard>
 
