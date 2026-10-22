@@ -5,6 +5,7 @@ interface GridSizes {
   sm?: number
   md?: number
   lg?: number
+  xl?: number
 }
 
 interface ListSkeletonProps {

@@ -39,7 +39,7 @@ La app no llama al backend directo: pide todo a `/api` en su propio origen y Vit
 
 ## Tests
 
-16 tests en 3 archivos (utilidades de membresía, `ProtectedRoute` y `ClienteCard`). Detalle y evidencia en [tests](https://github.com/Campesianoo/Trabajo-Desarrollo/blob/main/docs/tests.md).
+36 tests en 6 archivos (utilidades de membresía y de turnos, `ProtectedRoute`, `ClienteCard`, `TurnoCard` y el selector de tema). Detalle y evidencia en [tests](https://github.com/Campesianoo/Trabajo-Desarrollo/blob/main/docs/tests.md).
 
 ## Pull requests
 
