@@ -16,6 +16,7 @@ import PhoneIcon from '@mui/icons-material/Phone'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import AutorenewIcon from '@mui/icons-material/Autorenew'
 import type { Cliente } from '../../models/cliente'
 import { colorEstado, formatearFecha } from '../../utils/membresia'
 import { easeOut } from '../../styles/theme'
@@ -25,6 +26,8 @@ interface ClienteCardProps {
   expanded: boolean
   onToggle: () => void
   onDetail: (cliente: Cliente) => void
+  // Solo el admin ve las membresías, y es quien las renueva
+  onRenovar?: (cliente: Cliente) => void
   onEdit: (cliente: Cliente) => void
   onDelete: (cliente: Cliente) => void
 }
@@ -39,7 +42,15 @@ function textoAcceso({ activo, debeCambiarPassword }: Cliente): string {
   return 'Puede entrar a la app con su email.'
 }
 
-function ClienteCard({ cliente, expanded, onToggle, onDetail, onEdit, onDelete }: ClienteCardProps) {
+function ClienteCard({
+  cliente,
+  expanded,
+  onToggle,
+  onDetail,
+  onRenovar,
+  onEdit,
+  onDelete,
+}: ClienteCardProps) {
   const { dni, nombre, apellido, email, telefono, activo, debeCambiarPassword, membresia } = cliente
   const puedeEntrar = activo
 
@@ -133,6 +144,16 @@ function ClienteCard({ cliente, expanded, onToggle, onDetail, onEdit, onDelete }
               '& > *': { flex: '1 1 auto' },
             }}
           >
+            {onRenovar && membresia !== undefined && (
+              <Button
+                variant="outlined"
+                startIcon={<AutorenewIcon />}
+                size="small"
+                onClick={() => onRenovar(cliente)}
+              >
+                Renovar membresía
+              </Button>
+            )}
             <Button
               variant="outlined"
               startIcon={<VisibilityIcon />}

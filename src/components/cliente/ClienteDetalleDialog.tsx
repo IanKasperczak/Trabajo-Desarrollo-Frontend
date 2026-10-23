@@ -12,6 +12,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import AutorenewIcon from '@mui/icons-material/Autorenew'
 import type { Cliente } from '../../models/cliente'
 import type { Rutina } from '../../models/rutina'
 import { rutinaService } from '../../services/rutinaService'
@@ -21,6 +22,7 @@ import { formatearDescanso } from '../../utils/rutinaForm'
 interface ClienteDetalleDialogProps {
   cliente: Cliente | null
   onClose: () => void
+  onRenovar?: (cliente: Cliente) => void
 }
 
 function Dato({ label, value }: { label: string; value: string }) {
@@ -36,7 +38,7 @@ function Dato({ label, value }: { label: string; value: string }) {
   )
 }
 
-function ClienteDetalleDialog({ cliente, onClose }: ClienteDetalleDialogProps) {
+function ClienteDetalleDialog({ cliente, onClose, onRenovar }: ClienteDetalleDialogProps) {
   const [rutinas, setRutinas] = useState<Rutina[] | null>(null)
   const [error, setError] = useState(false)
   const dni = cliente?.dni
@@ -93,6 +95,17 @@ function ClienteDetalleDialog({ cliente, onClose }: ClienteDetalleDialogProps) {
                       <Typography variant="body2" color="text.secondary">
                         Todavía no tiene ninguna membresía.
                       </Typography>
+                    )}
+                    {onRenovar && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<AutorenewIcon />}
+                        onClick={() => onRenovar(cliente)}
+                        sx={{ mt: 1.5 }}
+                      >
+                        Renovar membresía
+                      </Button>
                     )}
                   </Box>
                 </>

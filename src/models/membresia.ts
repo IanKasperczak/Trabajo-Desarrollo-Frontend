@@ -20,6 +20,22 @@ export interface Membresia {
   cliente: ClienteResumen | null
 }
 
+// Cómo quedaría la renovación de un cliente: las fechas las calcula el backend
+export interface Renovacion {
+  // La membresía que vence más tarde, o null si nunca tuvo una
+  ultima: Membresia | null
+  fechaPago: string
+  fechaInicio: string
+  fechaVencimiento: string
+  // El importe de la última; null si es la primera vez
+  valor: number | null
+}
+
+export interface RenovarInput {
+  fechaPago: string
+  valor: number
+}
+
 export interface MembresiaInput {
   dniCliente: number
   fechaPago: string

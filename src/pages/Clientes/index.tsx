@@ -15,6 +15,7 @@ import AddIcon from '@mui/icons-material/Add'
 import ClienteList from '../../components/cliente/ClienteList'
 import ClienteFormDialog from '../../components/cliente/ClienteFormDialog'
 import ClienteDetalleDialog from '../../components/cliente/ClienteDetalleDialog'
+import RenovarMembresiaDialog from '../../components/membresia/RenovarMembresiaDialog'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import ErrorState from '../../components/ui/ErrorState'
 import EmptyState from '../../components/ui/EmptyState'
@@ -35,6 +36,7 @@ function Clientes() {
   const [query, setQuery] = useState('')
   const [estadoFiltro, setEstadoFiltro] = useState('')
   const [viendo, setViendo] = useState<Cliente | null>(null)
+  const [renovando, setRenovando] = useState<Cliente | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Cliente | null>(null)
   const [deleting, setDeleting] = useState<Cliente | null>(null)
@@ -106,6 +108,18 @@ function Clientes() {
         severity: 'error',
       })
     }
+  }
+
+  const handleRenovada = async () => {
+    const cliente = renovando
+    setRenovando(null)
+    setSnackbar({
+      message: cliente
+        ? `Membresía de ${cliente.nombre} ${cliente.apellido} renovada correctamente.`
+        : 'Membresía renovada correctamente.',
+      severity: 'success',
+    })
+    await reload()
   }
 
   const handleConfirmDelete = async () => {
@@ -206,6 +220,7 @@ function Clientes() {
         <ClienteList
           clientes={filtered}
           onDetail={setViendo}
+          onRenovar={setRenovando}
           onEdit={handleOpenEdit}
           onDelete={setDeleting}
         />
@@ -218,7 +233,20 @@ function Clientes() {
         onSubmit={handleSubmit}
       />
 
-      <ClienteDetalleDialog cliente={viendo} onClose={() => setViendo(null)} />
+      <ClienteDetalleDialog
+        cliente={viendo}
+        onClose={() => setViendo(null)}
+        onRenovar={(cliente) => {
+          setViendo(null)
+          setRenovando(cliente)
+        }}
+      />
+
+      <RenovarMembresiaDialog
+        cliente={renovando}
+        onClose={() => setRenovando(null)}
+        onRenovada={handleRenovada}
+      />
 
       <ConfirmDialog
         open={deleting !== null}

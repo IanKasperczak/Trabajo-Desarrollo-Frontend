@@ -6,11 +6,12 @@ import ClienteCard from './ClienteCard'
 interface ClienteListProps {
   clientes: Cliente[]
   onDetail: (cliente: Cliente) => void
+  onRenovar?: (cliente: Cliente) => void
   onEdit: (cliente: Cliente) => void
   onDelete: (cliente: Cliente) => void
 }
 
-function ClienteList({ clientes, onDetail, onEdit, onDelete }: ClienteListProps) {
+function ClienteList({ clientes, onDetail, onRenovar, onEdit, onDelete }: ClienteListProps) {
   const [expandedDni, setExpandedDni] = useState<number | null>(null)
 
   return (
@@ -24,6 +25,7 @@ function ClienteList({ clientes, onDetail, onEdit, onDelete }: ClienteListProps)
               setExpandedDni((prev) => (prev === cliente.dni ? null : cliente.dni))
             }
             onDetail={onDetail}
+            onRenovar={onRenovar}
             onEdit={onEdit}
             onDelete={onDelete}
           />
