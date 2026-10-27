@@ -34,7 +34,8 @@ const valoresIniciales = (turno: Turno | null, fechaInicial: string): TurnoFormV
   turno
     ? {
         idClase: turno.idClase,
-        modalidad: turno.fecha === null ? 'diario' : 'dia',
+        modalidad:
+          turno.fecha === null || turno.idTurnoPlantilla != null ? 'diario' : 'dia',
         fecha: turno.fecha ?? fechaInicial,
         horaInicio: turno.horaInicio?.slice(0, 5) ?? '',
         horaFin: turno.horaFin?.slice(0, 5) ?? '',
@@ -152,7 +153,9 @@ function TurnoFormDialog({
             </ToggleButtonGroup>
             <Typography variant="caption" color="text.secondary" component="p" sx={{ mt: 0.75 }}>
               {isEditing
-                ? 'Un turno ya creado no pasa de "un día" a "todos los días", ni al revés.'
+                ? form.modalidad === 'diario'
+                  ? 'Este turno pertenece a una repetición diaria. Los cambios se aplican a todos los turnos generados.'
+                  : 'Un turno ya creado no pasa de "un día" a "todos los días", ni al revés.'
                 : form.modalidad === 'diario'
                   ? 'Se generan los turnos de los próximos 30 días y se siguen generando cada día.'
                   : 'Se crea un solo turno en la fecha elegida.'}

@@ -196,8 +196,8 @@ function Turnos() {
             Turnos que se repiten todos los días
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 2, maxWidth: 620 }}>
-            Cada uno genera los turnos de los próximos 30 días. Si lo editás o lo eliminás, los
-            turnos que ya se generaron quedan como están.
+            Cada uno genera los turnos de los próximos 30 días. Si lo editás, los cambios se aplican
+            a todos los turnos generados. Si lo eliminás, los turnos ya generados quedan como están.
           </Typography>
           <Grid container spacing={2} sx={{ alignItems: 'stretch' }}>
             {listaPlantillas.map((turno) => (

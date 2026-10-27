@@ -36,6 +36,7 @@ export interface Turno {
   horaInicio: string | null
   horaFin: string | null
   capacidadMaxima: number | null
+  idTurnoPlantilla?: number | null
   tipoClase: TipoClase | null
   profesores: PersonaResumen[]
   // Para el cliente solo trae su propia inscripción; para admin y profesor, todas
