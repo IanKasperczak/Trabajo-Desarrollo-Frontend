@@ -33,6 +33,9 @@ const aInput = (values: TurnoFormValues): TurnoInput => ({
   dniProfesores: values.dniProfesores,
 })
 
+const ordenarPorHorario = (turnos: Turno[]) =>
+  [...turnos].sort((a, b) => (a.horaInicio ?? '').localeCompare(b.horaInicio ?? ''))
+
 // Clases del día: los turnos de una fecha con sus lugares y sus inscriptos. Acá se crean los
 // turnos (de un día o "todos los días") y se registra la asistencia
 function Turnos() {
@@ -140,7 +143,8 @@ function Turnos() {
     </Stack>
   )
 
-  const listaPlantillas = plantillas.data ?? []
+  const turnosOrdenados = ordenarPorHorario(turnos)
+  const listaPlantillas = ordenarPorHorario(plantillas.data ?? [])
 
   return (
     <Box>
@@ -182,7 +186,7 @@ function Turnos() {
       )}
       {!loading && !error && turnos.length > 0 && (
         <Grid container spacing={2} sx={{ alignItems: 'stretch' }}>
-          {turnos.map((turno) => (
+          {turnosOrdenados.map((turno) => (
             <Grid item xs={12} md={6} xl={4} key={turno.idTurno}>
               <TurnoCard turno={turno} acciones={acciones(turno)} />
             </Grid>
