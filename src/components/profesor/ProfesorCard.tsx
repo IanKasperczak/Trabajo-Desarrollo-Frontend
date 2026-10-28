@@ -54,7 +54,11 @@ function ProfesorCard({
           expandIcon={<ExpandMoreIcon color="primary" />}
           aria-controls={`profesor-${dni}-content`}
           id={`profesor-${dni}-header`}
-          sx={{ px: 2, py: 1.5 }}
+          sx={{
+            px: 2,
+            py: 1.75,
+            '& .MuiAccordionSummary-content': { minWidth: 0, my: 0 },
+          }}
         >
           <Box
             sx={{
@@ -64,12 +68,16 @@ function ProfesorCard({
               minWidth: 0,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Avatar sx={{ bgcolor: 'primary.main', color: 'text.primary' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+              <Avatar sx={{ bgcolor: 'primary.main', color: 'text.primary', flexShrink: 0 }}>
                 {getInitials(nombre, apellido)}
               </Avatar>
               {/* span: el Accordion ya envuelve el resumen en un <h3> */}
-              <Typography variant="h5" component="span" noWrap>
+              <Typography
+                variant="h5"
+                component="span"
+                sx={{ flex: 1, minWidth: 0, whiteSpace: 'normal', overflowWrap: 'anywhere' }}
+              >
                 {nombre} {apellido}
               </Typography>
             </Box>
