@@ -1,6 +1,7 @@
 import { Box, Button, Card, Chip, Stack, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import HistoryIcon from '@mui/icons-material/History'
 import type { Membresia } from '../../models/membresia'
 import { colorEstado, diasHasta, formatearFecha, formatearImporte } from '../../utils/membresia'
 
@@ -10,6 +11,7 @@ interface MembresiaCardProps {
   // Sin estas acciones la tarjeta es de solo lectura (vista del cliente)
   onEdit?: (membresia: Membresia) => void
   onDelete?: (membresia: Membresia) => void
+  onViewHistory?: (membresia: Membresia) => void
 }
 
 function Dato({ label, value }: { label: string; value: string }) {
@@ -39,7 +41,13 @@ function textoPlazo(membresia: Membresia): string | null {
   return null
 }
 
-function MembresiaCard({ membresia, mostrarCliente = false, onEdit, onDelete }: MembresiaCardProps) {
+function MembresiaCard({
+  membresia,
+  mostrarCliente = false,
+  onEdit,
+  onDelete,
+  onViewHistory,
+}: MembresiaCardProps) {
   const { cliente, estado, fechaPago, fechaInicio, fechaVencimiento, valor } = membresia
   const plazo = textoPlazo(membresia)
 
@@ -86,8 +94,18 @@ function MembresiaCard({ membresia, mostrarCliente = false, onEdit, onDelete }: 
         </Typography>
       )}
 
-      {(onEdit || onDelete) && (
+      {(onEdit || onDelete || onViewHistory) && (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 'auto', pt: 2, '& > *': { flex: '1 1 auto' } }}>
+          {onViewHistory && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<HistoryIcon />}
+              onClick={() => onViewHistory(membresia)}
+            >
+              Historial
+            </Button>
+          )}
           {onEdit && (
             <Button
               variant="contained"

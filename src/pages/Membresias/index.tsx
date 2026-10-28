@@ -14,6 +14,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search'
 import AddIcon from '@mui/icons-material/Add'
 import MembresiaCard from '../../components/membresia/MembresiaCard'
+import HistorialPagosDialog from '../../components/membresia/HistorialPagosDialog'
 import MembresiaFormDialog from '../../components/membresia/MembresiaFormDialog'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import EmptyState from '../../components/ui/EmptyState'
@@ -46,6 +47,7 @@ function Membresias() {
   const [formOpen, setFormOpen] = useState(false)
   const [editando, setEditando] = useState<Membresia | null>(null)
   const [eliminando, setEliminando] = useState<Membresia | null>(null)
+  const [clienteHistorial, setClienteHistorial] = useState<{ dni: number; nombre: string } | null>(null)
   const [snackbar, setSnackbar] = useState<SnackbarState>(null)
 
   const normalizedQuery = query.trim().toLowerCase()
@@ -66,6 +68,15 @@ function Membresias() {
   const abrirEdicion = (membresia: Membresia) => {
     setEditando(membresia)
     setFormOpen(true)
+  }
+
+  const abrirHistorial = (membresia: Membresia) => {
+    setClienteHistorial({
+      dni: membresia.dniCliente,
+      nombre: membresia.cliente
+        ? `${membresia.cliente.nombre} ${membresia.cliente.apellido}`
+        : `DNI ${membresia.dniCliente}`,
+    })
   }
 
   const cerrarFormulario = () => {
@@ -200,6 +211,7 @@ function Membresias() {
               <MembresiaCard
                 membresia={membresia}
                 mostrarCliente
+                onViewHistory={abrirHistorial}
                 onEdit={abrirEdicion}
                 onDelete={setEliminando}
               />
@@ -215,6 +227,17 @@ function Membresias() {
           clientes={data.clientes}
           onClose={cerrarFormulario}
           onSubmit={handleSubmit}
+        />
+      )}
+
+      {clienteHistorial && (
+        <HistorialPagosDialog
+          cliente={clienteHistorial.nombre}
+          membresias={(data?.membresias ?? []).filter(
+            (membresia) => membresia.dniCliente === clienteHistorial.dni,
+          )}
+          open
+          onClose={() => setClienteHistorial(null)}
         />
       )}
 
