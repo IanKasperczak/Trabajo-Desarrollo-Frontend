@@ -3,6 +3,7 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import {
   AppBar,
   Box,
+  Button,
   Drawer,
   IconButton,
   List,
@@ -16,6 +17,7 @@ import {
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom'
 import type { Theme } from '@mui/material'
 import type { Role } from '../../models/role'
 import { roleBase, roleNav } from '../../utils/navigation'
@@ -148,6 +150,28 @@ function MainLayout({ role }: MainLayoutProps) {
             {APP_NAME}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
+          {/* Acceso directo de uso diario del administrador; en pantallas chicas solo el ícono */}
+          {role === 'administrador' && (
+            <Button
+              component={NavLink}
+              to={`${base}/control-acceso`}
+              variant="contained"
+              color="primary"
+              size="small"
+              startIcon={<MeetingRoomIcon />}
+              aria-label="Control de acceso"
+              sx={{
+                whiteSpace: 'nowrap',
+                minWidth: 36,
+                px: { xs: 1, sm: 2 },
+                '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 }, ml: { xs: 0, sm: -0.5 } },
+              }}
+            >
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                Control de acceso
+              </Box>
+            </Button>
+          )}
           <UserMenu />
         </Toolbar>
       </AppBar>
