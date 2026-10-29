@@ -5,6 +5,7 @@ import CategoryIcon from '@mui/icons-material/Category'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import CardMembershipIcon from '@mui/icons-material/CardMembership'
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom'
 import StatCard from '../../components/dashboard/common/StatCard'
 import SectionCard from '../../components/dashboard/common/SectionCard'
 import RankingList from '../../components/dashboard/common/RankingList'
@@ -24,6 +25,7 @@ import { membresiaService } from '../../services/membresiaService'
 import type { AlertItem } from '../../models/dashboard'
 
 const adminQuickActions: QuickActionItem[] = [
+  { label: 'Control de acceso', icon: MeetingRoomIcon, to: '/admin/control-acceso' },
   { label: 'Clientes', icon: PersonIcon, to: '/admin/clientes' },
   { label: 'Profesores', icon: SupervisorAccountIcon, to: '/admin/profesores' },
   { label: 'Rutinas', icon: AssignmentIcon, to: '/admin/rutinas' },
