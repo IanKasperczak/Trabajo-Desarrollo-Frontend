@@ -12,6 +12,7 @@ import Especialidades from '../pages/Especialidades'
 import Clases from '../pages/Clases'
 import Turnos from '../pages/Turnos'
 import Membresias from '../pages/Membresias'
+import ControlAcceso from '../pages/ControlAcceso'
 import Rutinas from '../pages/Rutinas'
 import ProfesorMisClases from '../pages/Profesor/MisClases'
 import ProfesorMisTurnos from '../pages/Profesor/MisTurnos'
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
       { path: 'clases', element: <Clases /> },
       { path: 'turnos', element: <Turnos /> },
       { path: 'membresias', element: <Membresias /> },
+      { path: 'control-acceso', element: <ControlAcceso /> },
       { path: 'rutinas', element: <Rutinas /> },
       { path: 'especialidades', element: <Especialidades /> },
       { path: 'usuarios', element: <Usuarios /> },
