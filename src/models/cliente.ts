@@ -7,6 +7,14 @@ export interface MembresiaResumen {
   estado: EstadoMembresia
 }
 
+// Ausencias a turnos reservados. Con 3 en 30 días no puede reservar por 7 días
+export interface Strikes {
+  // Ausencias en los últimos 30 días
+  strikes: number
+  // Último día (inclusive) en que no puede reservar; null si no está bloqueado
+  bloqueadoHasta: string | null
+}
+
 export interface Cliente {
   dni: number
   nombre: string
@@ -21,6 +29,8 @@ export interface Cliente {
   debeCambiarPassword: boolean
   // Solo la recibe el admin (null si nunca tuvo); el profesor no ve las membresías
   membresia?: MembresiaResumen | null
+  // Solo en el detalle de un cliente y en el perfil propio
+  strikes?: Strikes
 }
 
 export interface ClienteInput {

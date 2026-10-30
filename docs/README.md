@@ -40,7 +40,7 @@ La app no llama al backend directo: pide todo a `/api` en su propio origen y Vit
 
 ## Tests
 
-46 tests en 7 archivos (utilidades de membresía y de turnos, `ProtectedRoute`, `ClienteCard`, `TurnoCard`, el diálogo de renovación y el selector de tema). Detalle y evidencia en [tests](https://github.com/Campesianoo/Trabajo-Desarrollo/blob/main/docs/tests.md).
+52 tests en 8 archivos (utilidades de membresía y de turnos, incluido el texto de los strikes, `ProtectedRoute`, `ClienteCard`, `TurnoCard`, el diálogo de renovación, el historial de pagos y el selector de tema). Detalle y evidencia en [tests](https://github.com/Campesianoo/Trabajo-Desarrollo/blob/main/docs/tests.md).
 
 **Test end-to-end:** 5 pruebas de Playwright recorren la app con un navegador real (login, control de acceso y el recorrido renovar membresía → reservar turno). Cómo correrlas en [`e2e/README.md`](../e2e/README.md).
 

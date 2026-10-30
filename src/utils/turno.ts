@@ -1,6 +1,7 @@
+import type { Strikes } from '../models/cliente'
 import type { Membresia } from '../models/membresia'
 import type { EstadoInscripcion, Inscripcion, Turno } from '../models/turno'
-import { hoyISO, sumarDias } from './membresia'
+import { formatearFecha, hoyISO, sumarDias } from './membresia'
 
 // El backend genera los turnos de los próximos 30 días a partir de las plantillas
 export const DIAS_ADELANTE = 29
@@ -44,6 +45,25 @@ export const membresiaCubre = (membresias: Membresia[], fecha: string): boolean 
 // Hay alguna membresía que todavía no venció (aunque no cubra el día elegido)
 export const tieneMembresiaAlDia = (membresias: Membresia[], hoy: string = hoyISO()): boolean =>
   membresias.some((m) => m.fechaVencimiento >= hoy)
+
+// Strikes: con STRIKES_PARA_BLOQUEO ausencias en 30 días no puede reservar por 7 días (lo
+// calcula el backend)
+export const STRIKES_PARA_BLOQUEO = 3
+
+// Al cliente se le habla de vos; al admin y al profesor, del cliente en tercera persona
+export const textoStrikes = (
+  { strikes, bloqueadoHasta }: Strikes,
+  persona: 'vos' | 'cliente' = 'vos',
+): string => {
+  const vos = persona === 'vos'
+  const tiene = vos ? 'Tenés' : 'Tiene'
+  if (bloqueadoHasta) {
+    const desde = formatearFecha(sumarDias(bloqueadoHasta, 1))
+    return `${tiene} ${STRIKES_PARA_BLOQUEO} ausencias en los últimos 30 días: ${vos ? 'podés' : 'puede'} volver a reservar desde el ${desde}.`
+  }
+  const ausencias = strikes === 1 ? '1 ausencia' : `${strikes} ausencias`
+  return `${tiene} ${ausencias} en los últimos 30 días. Con ${STRIKES_PARA_BLOQUEO} no ${vos ? 'vas' : 'va'} a poder reservar durante 7 días.`
+}
 
 // Horas que faltan para que empiece el turno (negativo si ya empezó), en la hora del navegador
 export const horasParaInicio = (turno: Turno, ahora: Date = new Date()): number => {
