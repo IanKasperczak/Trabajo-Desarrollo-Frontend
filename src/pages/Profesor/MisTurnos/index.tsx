@@ -48,7 +48,7 @@ function MisTurnos() {
       {!loading && !error && turnos.length > 0 && (
         <Grid container spacing={2} sx={{ alignItems: 'stretch' }}>
           {turnos.map((turno) => (
-            <Grid item xs={12} md={6} xl={4} key={turno.idTurno}>
+            <Grid item xs={12} sm={6} xl={4} key={turno.idTurno}>
               <TurnoCard
                 turno={turno}
                 acciones={

@@ -39,7 +39,7 @@ function ProfesorCard({
   const { dni, nombre, apellido, email, telefono, especialidades } = profesor
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', bgcolor: 'background.paper' }}>
+    <Card variant="outlined" sx={{ bgcolor: 'background.paper' }}>
       <Accordion
         expanded={expanded}
         onChange={onToggle}
