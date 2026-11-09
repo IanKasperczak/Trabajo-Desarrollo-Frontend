@@ -9,6 +9,7 @@ import {
   horasParaInicio,
   membresiaCubre,
   miInscripcionVigente,
+  textoStrikes,
   tieneMembresiaAlDia,
 } from './turno'
 
@@ -133,5 +134,25 @@ describe('tieneMembresiaAlDia', () => {
   it('es falso si todas vencieron o no hay ninguna', () => {
     expect(tieneMembresiaAlDia([membresia('2026-09-01', '2026-09-30')], '2026-10-01')).toBe(false)
     expect(tieneMembresiaAlDia([], '2026-10-01')).toBe(false)
+  })
+})
+
+describe('textoStrikes', () => {
+  it('avisa cuántas ausencias tiene mientras no está bloqueado', () => {
+    expect(textoStrikes({ strikes: 1, bloqueadoHasta: null })).toBe(
+      'Tenés 1 ausencia en los últimos 30 días. Con 3 no vas a poder reservar durante 7 días.',
+    )
+  })
+
+  it('con el bloqueo dice desde qué día puede volver a reservar', () => {
+    expect(textoStrikes({ strikes: 3, bloqueadoHasta: '2026-11-04' })).toBe(
+      'Tenés 3 ausencias en los últimos 30 días: podés volver a reservar desde el 05/11/2026.',
+    )
+  })
+
+  it('al admin y al profesor les habla del cliente', () => {
+    expect(textoStrikes({ strikes: 3, bloqueadoHasta: '2026-11-04' }, 'cliente')).toBe(
+      'Tiene 3 ausencias en los últimos 30 días: puede volver a reservar desde el 05/11/2026.',
+    )
   })
 })

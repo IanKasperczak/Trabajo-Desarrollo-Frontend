@@ -10,6 +10,7 @@ import ErrorState from '../../../components/ui/ErrorState'
 import ListSkeleton from '../../../components/ui/ListSkeleton'
 import { useAsyncData } from '../../../hooks/useAsyncData'
 import { useTurnos } from '../../../hooks/useTurnos'
+import { clienteService } from '../../../services/clienteService'
 import { membresiaService } from '../../../services/membresiaService'
 import { turnoService } from '../../../services/turnoService'
 import { mensajeDeErrorApi } from '../../../utils/apiError'
@@ -22,6 +23,7 @@ import {
   horasParaInicio,
   membresiaCubre,
   miInscripcionVigente,
+  textoStrikes,
   tieneMembresiaAlDia,
 } from '../../../utils/turno'
 import type { Turno } from '../../../models/turno'
@@ -39,6 +41,10 @@ function ReservarClase() {
   const membresias = useAsyncData(membresiaService.getAll)
   const misMembresias = membresias.data
   const sinMembresiaAlDia = misMembresias !== null && !tieneMembresiaAlDia(misMembresias)
+  // Sus ausencias: con 3 en 30 días no puede reservar por 7 días
+  const perfil = useAsyncData(clienteService.getMiPerfil)
+  const strikes = perfil.data?.strikes
+  const bloqueado = Boolean(strikes?.bloqueadoHasta)
 
   const [procesando, setProcesando] = useState<number | null>(null)
   const [cancelando, setCancelando] = useState<Turno | null>(null)
@@ -53,6 +59,8 @@ function ReservarClase() {
       setSnackbar({ message: 'Listo, tu lugar quedó reservado.', severity: 'success' })
       await reload()
     } catch (err) {
+      // Puede haber quedado bloqueado por una ausencia que se registró mientras tanto
+      void perfil.reload()
       setSnackbar({
         message: mensajeDeErrorApi(err, 'No se pudo reservar el lugar. Intentá nuevamente.'),
         severity: 'error',
@@ -94,6 +102,7 @@ function ReservarClase() {
           : `Se reserva hasta ${HORAS_ANTICIPACION} horas antes`
       }
       if (estaCompleto(turno)) return 'No quedan lugares'
+      if (bloqueado) return 'Reservas suspendidas por ausencias'
       if (misMembresias !== null && !membresiaCubre(misMembresias, turno.fecha ?? fecha)) {
         return sinMembresiaAlDia
           ? 'Necesitás una membresía vigente'
@@ -132,13 +141,20 @@ function ReservarClase() {
         <Box sx={{ width: 56, height: 4, bgcolor: 'primary.main', borderRadius: 2, mt: 0.5 }} />
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5, maxWidth: 560 }}>
           Elegí el día y reservá tu lugar. Necesitás una membresía vigente, podés reservar hasta{' '}
-          {HORAS_ANTICIPACION} horas antes y un turno por día.
+          {HORAS_ANTICIPACION} horas antes y un turno por día. Si faltás a 3 clases en 30 días, no
+          vas a poder reservar durante 7 días.
         </Typography>
       </Box>
 
       {sinMembresiaAlDia && (
         <Alert severity="warning" sx={{ mb: 2.5 }}>
           Para reservar necesitás una membresía vigente. Consultá en el gimnasio para renovarla.
+        </Alert>
+      )}
+
+      {strikes && strikes.strikes > 0 && (
+        <Alert severity={bloqueado ? 'error' : 'info'} sx={{ mb: 2.5 }}>
+          {textoStrikes(strikes)}
         </Alert>
       )}
 

@@ -13,11 +13,13 @@ import {
   Typography,
 } from '@mui/material'
 import AutorenewIcon from '@mui/icons-material/Autorenew'
-import type { Cliente } from '../../models/cliente'
+import type { Cliente, Strikes } from '../../models/cliente'
 import type { Rutina } from '../../models/rutina'
+import { clienteService } from '../../services/clienteService'
 import { rutinaService } from '../../services/rutinaService'
 import { colorEstado, formatearFecha } from '../../utils/membresia'
 import { formatearDescanso } from '../../utils/rutinaForm'
+import { STRIKES_PARA_BLOQUEO, textoStrikes } from '../../utils/turno'
 
 interface ClienteDetalleDialogProps {
   cliente: Cliente | null
@@ -41,6 +43,8 @@ function Dato({ label, value }: { label: string; value: string }) {
 function ClienteDetalleDialog({ cliente, onClose, onRenovar }: ClienteDetalleDialogProps) {
   const [rutinas, setRutinas] = useState<Rutina[] | null>(null)
   const [error, setError] = useState(false)
+  // Las ausencias vienen en el detalle del cliente, no en el listado
+  const [strikes, setStrikes] = useState<Strikes | null>(null)
   const dni = cliente?.dni
 
   useEffect(() => {
@@ -48,6 +52,14 @@ function ClienteDetalleDialog({ cliente, onClose, onRenovar }: ClienteDetalleDia
     let cancelado = false
     setRutinas(null)
     setError(false)
+    setStrikes(null)
+    clienteService
+      .getByDni(dni)
+      .then((detalle) => {
+        if (!cancelado) setStrikes(detalle.strikes ?? null)
+      })
+      // Si falla, la sección de ausencias simplemente no se muestra
+      .catch(() => undefined)
     rutinaService
       .getAll()
       .then((todas) => {
@@ -106,6 +118,37 @@ function ClienteDetalleDialog({ cliente, onClose, onRenovar }: ClienteDetalleDia
                       >
                         Renovar membresía
                       </Button>
+                    )}
+                  </Box>
+                </>
+              )}
+
+              {strikes && (
+                <>
+                  <Divider />
+                  <Box>
+                    <Typography variant="h6" component="h3" sx={{ mb: 1 }}>
+                      Ausencias
+                    </Typography>
+                    {strikes.strikes === 0 ? (
+                      <Typography variant="body2" color="text.secondary">
+                        Sin ausencias en los últimos 30 días.
+                      </Typography>
+                    ) : (
+                      <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap>
+                        <Chip
+                          label={
+                            strikes.bloqueadoHasta
+                              ? 'Reservas suspendidas'
+                              : `${strikes.strikes} de ${STRIKES_PARA_BLOQUEO}`
+                          }
+                          color={strikes.bloqueadoHasta ? 'error' : 'warning'}
+                          size="small"
+                        />
+                        <Typography variant="body2" color="text.secondary">
+                          {textoStrikes(strikes, 'cliente')}
+                        </Typography>
+                      </Stack>
                     )}
                   </Box>
                 </>
