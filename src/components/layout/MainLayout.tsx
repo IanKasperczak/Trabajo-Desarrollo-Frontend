@@ -223,7 +223,9 @@ function MainLayout({ role }: MainLayoutProps) {
           sx={{
             maxWidth: 1400,
             mx: 'auto',
-            animation: `page-enter 240ms ${easeOut} both`,
+            // backwards y no both: al terminar no queda un transform aplicado, que encerraría a
+            // los avisos (Snackbar) de la pantalla y los dejaría detrás de los diálogos abiertos
+            animation: `page-enter 240ms ${easeOut} backwards`,
           }}
         >
           <Outlet />
