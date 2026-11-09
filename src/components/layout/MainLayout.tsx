@@ -129,7 +129,7 @@ function MainLayout({ role }: MainLayoutProps) {
             sx={{
               mr: 0.5,
               display: { lg: 'none' },
-              color: 'background.default',
+              color: '#FFFFFF',
             }}
           >
             <MenuIcon />

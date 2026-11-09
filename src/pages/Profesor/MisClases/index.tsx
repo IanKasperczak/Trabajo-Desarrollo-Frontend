@@ -59,7 +59,7 @@ function MisClases() {
               </Typography>
               <Grid container spacing={2} sx={{ alignItems: 'stretch' }}>
                 {delDia.map((turno) => (
-                  <Grid item xs={12} md={6} xl={4} key={turno.idTurno}>
+                  <Grid item xs={12} sm={6} xl={4} key={turno.idTurno}>
                     <TurnoCard
                       turno={turno}
                       acciones={
